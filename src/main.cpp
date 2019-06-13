@@ -2,6 +2,7 @@
 #include <fstream>
 
 int main() {
-    int a;
+    // trebuie sa citim datele si sa le bagam la train
+    // o sa luam mnist database de pe net
     return 0;
 }
