@@ -9,7 +9,7 @@ int main() {
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
     for (auto input : trainDataset) {
-        myNeuralNetwork.Train(input);
+        myNeuralNetwork.Train(input.second, input.first);
     }
 
     int total = 0;
@@ -18,8 +18,7 @@ int main() {
     auto testDataset = GetDataset("./test/mnist_test.csv");
     for (auto input : trainDataset) {
         total++;
-        if (input[0] == myNeuralNetwork.Classify(
-                            std::vector<int>(input.begin() + 1, input.end()))) {
+        if (input.first == myNeuralNetwork.Classify(input.second)) {
             predicted++;
         }
     }
