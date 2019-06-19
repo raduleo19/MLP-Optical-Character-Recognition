@@ -13,8 +13,8 @@ int main() {
         myNeuralNetwork.Train(input.second, input.first);
     }
 
-    int total = 11;
-    int predicted = 1;
+    int total = trainDataset.size();
+    int predicted = 0;
 
     auto testDataset = GetDataset("./test/mnist_test.csv");
     for (auto input : testDataset) {
