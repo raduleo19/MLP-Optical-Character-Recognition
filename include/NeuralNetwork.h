@@ -10,7 +10,7 @@ class NeuralNetwork {
 
     void Train(const std::vector<int> &input, int correctValue){};
 
-    int Classify(const std::vector<int> &input) {};
+    int Classify(const std::vector<int> &input) const{};
 
    private:
     int inputNeurons;
