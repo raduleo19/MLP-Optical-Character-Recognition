@@ -7,6 +7,26 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <random>
+#include <chrono>
 
 std::vector<int> GetRow(std::ifstream &inputFile);
 std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilename);
+
+class random_engine {
+public:
+    random_engine() {
+        seed = std::chrono::system_clock::now().time_since_epoch().count();
+        generator = std::ranlux24(seed);
+    }
+    
+    long double operator()() {
+        long double retval = generator() / granularityConstant;
+        return retval > 1.0 ? 1.0 : retval;
+    }
+    
+private:
+    double seed;
+    std::ranlux24 generator;
+    const int granularityConstant = 1e8;
+};

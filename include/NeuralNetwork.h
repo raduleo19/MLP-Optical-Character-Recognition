@@ -3,6 +3,7 @@
 #pragma once
 
 #include <vector>
+#include "../include/Utils.h"
 #include "../include/ActivationFunction.h"
 #include "../include/Matrix.h"
 
@@ -185,13 +186,18 @@ class NeuralNetwork {
         if (hiddenLayersCount) {
             hiddenLayers[0].activations = std::move(inputLayer.ComputeNextLayer());
             
+            for (int i = 1; i < hiddenLayersCount - 1; ++i)
+                hiddenLayers[i].activations = std::move(hiddenLayers[i - 1].ComputeNextLayer());
+            
+            outputLayer.activations = std::move(hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer());
         } else {
             outputLayer.activations = std::move(inputLayer.ComputeNextLayer());
-            return;
         }
     }
 
-    void setRandomStartingPoint() {}
+    void setRandomStartingPoint() {
+        
+    }
 
     int inputNeuronCount, outputNeuronCount, hiddenLayersCount;
     InputLayer<NormalizationFunction> inputLayer;
