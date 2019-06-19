@@ -8,8 +8,6 @@
 #include "../include/Matrix.h"
 #include "../include/Diagnostics.h"
 
-#define NNDIAG
-
 template <class T, class NormalizationFunction, class TakeStep>
 class NeuralNetwork {
 

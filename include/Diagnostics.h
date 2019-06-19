@@ -2,6 +2,8 @@
 
 #pragma once
 
+#define NNDIAG
+
 #include <iostream>
 #include <fstream>
 
