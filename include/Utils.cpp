@@ -15,8 +15,8 @@ std::vector<int> GetRow(std::ifstream &inputFile) {
     return buffer;
 }
 
-std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilename) {
-    std::vector<std::pair<int, std::vector<int>>> trainDataset;
+std::vector<std::vector<int>> GetDataset(std::string inputFilename) {
+    std::vector<std::vector<int>> trainDataset;
     std::ifstream trainingFile(inputFilename);
 
     while (true) {
@@ -24,7 +24,6 @@ std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilena
         if (row.empty()) {
             break;
         }
-        int correctValue = row[0];
-        trainDataset.push_back({correctValue, std::vector<int>(row.begin() + 1, row.end())});
+        trainDataset.push_back(row);
     }
 }
