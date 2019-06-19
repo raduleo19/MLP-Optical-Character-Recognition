@@ -2,10 +2,11 @@
 
 #pragma once
 
+/// SoftSign
+
 class ActivationFunction {
 public:
     long double operator () (const long double &target) {
-        /// Putem experimenta cu mai multe tipuri de functii de normalizare
         return target / (1 + abs(target));
     }
 private:
