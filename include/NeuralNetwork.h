@@ -6,9 +6,17 @@
 #include "../include/Utils.h"
 #include "../include/ActivationFunction.h"
 #include "../include/Matrix.h"
+#include "../include/Diagnostics.h"
+
+#define NNDIAG
 
 template <class T, class NormalizationFunction, class TakeStep>
 class NeuralNetwork {
+
+#ifdef NNDIAG
+    friend class NeuralDiagnostics;
+#endif  // NNDIAG
+
    public:
     NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
                   std::vector<int> _hiddenLayersSizes, int _outputNeuronCount,
@@ -56,11 +64,14 @@ class NeuralNetwork {
 
         forwardPropagate(input);
 
+        fitnessRecord.push_back(fitnessFunction());
+        
         /// TODO interface with TakeStep class (backpropagation)
     };
 
     int Classify(const std::vector<T> &input) {
         forwardPropagate(input);
+        
         long double max = -1.0;
         int retval = -1;
 
@@ -72,7 +83,7 @@ class NeuralNetwork {
         return retval;
     };
 
-   private:
+   protected:
     template <class sigmoid, class biasType = long double>
     class Layer {
        public:
@@ -221,4 +232,5 @@ class NeuralNetwork {
     std::vector<HiddenLayer<NormalizationFunction> > hiddenLayers;
     NormalizationFunction sigmoidFunction;
     double learningRate;
+    std::vector<double> fitnessRecord;
 };
