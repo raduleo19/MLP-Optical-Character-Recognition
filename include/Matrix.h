@@ -22,7 +22,7 @@ class Matrix {
         numColumns = target[0].size();
         container = std::move(target);
     }
-    
+
     Matrix(int numRows, int numColumns)
         : numRows(numRows), numColumns(numColumns) {
         container =
@@ -37,7 +37,7 @@ class Matrix {
         numColumns = target.numColumns;
         numRows = target.numRows;
         container = target.container;
-        
+
         return *this;
     }
 
@@ -45,7 +45,7 @@ class Matrix {
         numColumns = target.numColumns;
         numRows = target.numRows;
         container = target.container;
-        
+
         return *this;
     }
 
@@ -88,14 +88,21 @@ class Matrix {
         return *newMatrix;
     }
 
-    T &data(int row, int col) {
-        return container[row][col];
+    Matrix &HadamardMultiply(const Matrix &target) {
+        Matrix<T> *newMatrix = new Matrix<T>(numRows, numColumns);
+        for (size_t i = 0; i < numRows; i++) {
+            for (size_t j = 0; j < numColumns; j++) {
+                newMatrix->container[i][j] =
+                    container[i][j] * target.container[i][j];
+            }
+        }
+        return *newMatrix;
     }
 
-    std::pair<int, int> size() {
-        return {numRows, numColumns};
-    }
-    
+    T &data(int row, int col) { return container[row][col]; }
+
+    std::pair<int, int> size() { return {numRows, numColumns}; }
+
     ~Matrix() {}
 
     template <class F>
