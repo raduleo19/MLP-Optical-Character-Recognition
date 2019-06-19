@@ -6,7 +6,9 @@
 #include "../include/ActivationFunction.h"
 #include "../include/Matrix.h"
 
-template <class T, class NormalizationFunction>
+/// TODO @Rica, try patch the -fpermissive warning
+
+template <class T, class NormalizationFunction, class TakeStep>
 class NeuralNetwork {
    public:
     NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
@@ -31,16 +33,29 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
-        auto fitnessFunction = []() {
+        Matrix<long double> desiredOutput(outputNeuronCount, 1);
             
+        for (int i = 0; i < outputNeuronCount; ++i)
+            desiredOutput.data(i, 1) = 0.0;
+        desiredOutput.data(correctValue, 1) = 1.0;
+            
+        auto fitnessFunction = [=]() {
+            long double delta = 0;
+            
+            for (int i = 0; i < outputNeuronCount; ++i) {
+                long double epsilon = outputLayer.activations.data(i, 1) - desiredOutput.data(i, 1);
+                delta += epsilon * epsilon;
+            }
+            
+            return delta;
         };
+        
+        /// TODO interface with TakeStep class (backpropagation)
     };
 
     int Classify(const std::vector<int> &input) const {
         long double max = -1.0;
         int retval = -1;
-        
-        // TODO Try patch -fpermissive
         
         for (int i = 0; i < outputNeuronCount; ++i)
             if (outputLayer.activations.data(i, 1) > max)
@@ -150,7 +165,7 @@ class NeuralNetwork {
     template <class sigmoid, class biasType = long double>
     class OutputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction>;
+        friend class NeuralNetwork<T, NormalizationFunction, TakeStep>;
     };
 
     int inputNeuronCount;

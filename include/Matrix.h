@@ -88,12 +88,9 @@ class Matrix {
         return *newMatrix;
     }
 
-    T data(int row, int col) {
+    T &data(int row, int col) {
         return container[row][col];
     }
-    
-    /// TODO @Rica Hadamard multiplication
-    /// TODO - operator
 
     ~Matrix() {}
 
