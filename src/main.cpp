@@ -22,7 +22,7 @@ int main() {
 
     for (auto input : testDataset) {
         if (input.first == myNeuralNetwork.Classify(input.second)) {
-            predicted++;
+            ++predicted;
         }
     }
 
