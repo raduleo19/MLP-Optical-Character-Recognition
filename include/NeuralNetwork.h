@@ -24,7 +24,7 @@ class NeuralNetwork {
                 hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
     };
 
-    void Train(const std::vector<int> &input, int correctValue){
+    void Train(const std::vector<int> &input, int correctValue) {
         /// TODO now
     };
 
@@ -89,7 +89,9 @@ class NeuralNetwork {
             weights = std::move(target);
         }
 
-        void SetBias(Matrix<biasType> &&target) { bias = std::move(target); }
+        void SetBias(Matrix<biasType> &&target) {
+            bias = std::move(target);
+        }
 
         void SetActivations(Matrix<long double> &&target) {
             activations = std::move(target);
