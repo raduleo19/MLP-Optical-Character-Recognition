@@ -11,13 +11,8 @@ class Matrix {
     Matrix() {}
 
     Matrix(int numRows, int numColumns) {
-        container.resize(numRows, numColumns);
-    }
-
-    Matrix(int numRows, int numColumns, int value)
-        : Matrix(numRows, numColumns) {
-        container.resize(numRows, numColumns);
-        container.fill(value);
+        container =
+            std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns));
     }
 
     Matrix(const Matrix &target) {}
@@ -36,13 +31,13 @@ class Matrix {
 
     Matrix &operator*(const int &scalar) {}
 
-    Matrix &transpose() const {}
+    Matrix &Transpose() const {}
 
-    Matrix &hadamard_multiplication(const Matrix &target) const {}
+    Matrix &HadamardMultiplication(const Matrix &target) const {}
 
-    Matrix &kronecker_multiplication(const Matrix &target) const {}
+    Matrix &KroneckerMultiplication(const Matrix &target) const {}
 
-    Matrix &horizontal_concatenation(const Matrix &target) const {}
+    Matrix &HorizontalConcatenation(const Matrix &target) const {}
 
     ~Matrix() {}
 

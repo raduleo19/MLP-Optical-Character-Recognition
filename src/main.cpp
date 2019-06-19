@@ -3,6 +3,7 @@
 #include <vector>
 #include "../include/NeuralNetwork.h"
 #include "../include/Utils.h"
+#include "../include/Matrix.h"
 
 int main() {
     NeuralNetwork<int> myNeuralNetwork =
@@ -24,7 +25,9 @@ int main() {
         }
     }
 
-    std::cout << "Accuracy:" << 1.0 * predicted / total << '\n';
+    std::cout << "Accuracy:" << 100.0 * predicted / total << '\n';
+
+    Matrix<int> myMatrix(4, 10);
 
     return 0;
 }
