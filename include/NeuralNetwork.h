@@ -3,6 +3,8 @@
 #pragma once
 
 #include <vector>
+#include "../include/Matrix.h"
+#include "../include/ActivationFunction.h"
 
 template <class T>
 class NeuralNetwork {
