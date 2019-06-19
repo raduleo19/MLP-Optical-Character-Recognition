@@ -6,13 +6,21 @@
 #include "../include/Matrix.h"
 #include "../include/ActivationFunction.h"
 
-template <class T>
+template <class T, class normalizationFunction>
 class NeuralNetwork {
    public:
-    NeuralNetwork(int _inputNeurons, int _hiddenLayers,
-                  std::vector<int> _hiddenLayersSizes, int _outputNeurons,
+        NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
+                  std::vector<int> _hiddenLayersSizes, int  _outputNeuronCount,
                   double _learningRate) {
+        inputNeuronCount = _inputNeuronCount;
+        hiddenLayersCount = _hiddenLayersCount;
+        hiddenLayersSizes = std::move(_hiddenLayersSizes);
+        outputNeuronCount = _outputNeuronCount;
+        learningRate = _learningRate;
         
+        for (int i = 0; i < hiddenLayersCount - 1; ++i)
+            hiddenLayers.push_back(std::move(HiddenLayer<normalizationFunction>
+            (hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
     };
                   
     void Train(const std::vector<int> &input, int correctValue) {};
@@ -38,7 +46,7 @@ class NeuralNetwork {
         Layer &operator=(const Layer &target) {
             size = target.size;
             nextLayerSize = target.nextLayerSize;
-            activations = target.activation;
+            activations = target.activations;
             bias = target.bias;
             weights = target.weights;
         }
@@ -91,6 +99,11 @@ class NeuralNetwork {
     protected:
         size_t size;
         Matrix<long double> activations;
+        
+    private:
+        size_t nextLayerSize;
+        Matrix<long double> weights;
+        Matrix<biasType> bias;
     };
     
     template <class sigmoid, class biasType = long double>
@@ -114,9 +127,10 @@ class NeuralNetwork {
         using Layer<sigmoid, biasType>::Layer;
     };
        
-    int inputNeurons;
-    int hiddenLayers;
+    int inputNeuronCount;
+    int hiddenLayersCount;
     std::vector<int> hiddenLayersSizes;
-    int ouputNeurons;
+    std::vector<HiddenLayer<normalizationFunction> > hiddenLayers;
+    int outputNeuronCount;
     double learningRate;
 };
