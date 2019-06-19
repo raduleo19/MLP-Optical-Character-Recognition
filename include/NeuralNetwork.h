@@ -196,7 +196,22 @@ class NeuralNetwork {
     }
 
     void setRandomStartingPoint() {
+        randomEngine randomizer;
         
+        auto randomizeMatrix = [&randomizer](Matrix<long double> &target) {
+            std::pair<int, int> size;
+            size = target.size();
+            for (int i = 0; i < size.first; ++i)
+                for (int j = 0; j < size.second; ++j)
+                    target.data(i, j) = randomizer.getNumber();
+        };
+
+        randomizeMatrix(inputLayer.weights);
+        randomizeMatrix(inputLayer.bias);
+        
+        for (int i = 0; i < hiddenLayersCount; ++i)
+            randomizeMatrix(hiddenLayers[i].weights),
+            randomizeMatrix(hiddenLayers[i].bias);
     }
 
     int inputNeuronCount, outputNeuronCount, hiddenLayersCount;

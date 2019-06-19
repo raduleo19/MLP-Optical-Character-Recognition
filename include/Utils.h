@@ -21,7 +21,7 @@ public:
         generator = std::ranlux24(seed);
     }
 
-    long double get_number() {
+    long double getNumber() {
         long double retval = (generator() % 2 ? (-1) : 1) * 6.0 *
                               generator() / granularityConstant;
         return retval > 1.0 ? 1.0 : retval;

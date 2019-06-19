@@ -92,6 +92,10 @@ class Matrix {
         return container[row][col];
     }
 
+    std::pair<int, int> size() {
+        return {numRows, numColumns};
+    }
+    
     ~Matrix() {}
 
     template <class F>
