@@ -1,43 +1,51 @@
 // Copyright 2019 Ciobanu Bogdan-Calin
+// Copyright 2019 Rica Radu Leonard
 
 #pragma once
 
 #include <vector>
 
 template <class T>
-class matrix {
-public:
-    matrix () {}
-    
-    matrix (int n, int m) {}
-    
-    matrix (const matrix &target) {}
-    
-    matrix (matrix &&target) {}
-    
-    matrix &operator = (const matrix &target) {}
-    
-    matrix &operator = (matrix &&target) {}
-    
-    matrix &operator + (const matrix &target) {}
-    
-    matrix &operator *= (const matrix &target) {}
-    
-    matrix &operator * (const matrix &target) {}
-    
-    matrix &operator * (const int &scalar) {}
-    
-    matrix &transpose() {}
-    
-    matrix &hadamard_multiplication(const matrix &target) {}
-    
-    matrix &kronecker_multiplication(const matrix &target) {}
-    
-    matrix &horizontal_concatenation(const matrix &target) {}
-    
-    ~matrix() {}
-    
-private:
+class Matrix {
+   public:
+    Matrix() {}
+
+    Matrix(int numRows, int numColumns) {
+        container.resize(numRows, numColumns);
+    }
+
+    Matrix(int numRows, int numColumns, int value)
+        : Matrix(numRows, numColumns) {
+        container.resize(numRows, numColumns);
+        container.fill(value);
+    }
+
+    Matrix(const Matrix &target) {}
+
+    Matrix(Matrix &&target) {}
+
+    Matrix &operator=(const Matrix &target) {}
+
+    Matrix &operator=(Matrix &&target) {}
+
+    Matrix &operator+(const Matrix &target) {}
+
+    Matrix &operator*=(const Matrix &target) {}
+
+    Matrix &operator*(const Matrix &target) {}
+
+    Matrix &operator*(const int &scalar) {}
+
+    Matrix &transpose() const {}
+
+    Matrix &hadamard_multiplication(const Matrix &target) const {}
+
+    Matrix &kronecker_multiplication(const Matrix &target) const {}
+
+    Matrix &horizontal_concatenation(const Matrix &target) const {}
+
+    ~Matrix() {}
+
+   private:
     std::vector<std::vector<T>> container;
 };
-

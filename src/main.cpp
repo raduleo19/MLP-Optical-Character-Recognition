@@ -13,10 +13,10 @@ int main() {
         myNeuralNetwork.Train(input.second, input.first);
     }
 
-    int total = trainDataset.size();
+    auto testDataset = GetDataset("./test/mnist_test.csv");
+    int total = testDataset.size();
     int predicted = 0;
 
-    auto testDataset = GetDataset("./test/mnist_test.csv");
     for (auto input : testDataset) {
         total++;
         if (input.first == myNeuralNetwork.Classify(input.second)) {
