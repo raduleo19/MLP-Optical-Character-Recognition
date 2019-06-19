@@ -16,5 +16,5 @@ debug:
 clean:
 	rm -rvf $(TARGET)
 
-run:debug
+run:
 	$(TARGET)
