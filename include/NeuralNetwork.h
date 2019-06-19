@@ -12,6 +12,7 @@ class NeuralNetwork {
     NeuralNetwork(int _inputNeurons, int _hiddenLayers,
                   std::vector<int> _hiddenLayersSizes, int _outputNeurons,
                   double _learningRate) {
+        
     };
                   
     void Train(const std::vector<int> &input, int correctValue) {};
@@ -20,21 +21,21 @@ class NeuralNetwork {
 
    private:
     template <class sigmoid, class biasType = long double>
-    class HiddenLayer {
-    public:
-        HiddenLayer() {}
+    class Layer {
+        public:
+        Layer() {}
         
-        HiddenLayer(const size_t &_size, const size_t &_nextLayerSize) {}
+        Layer(const size_t &_size, const size_t &_nextLayerSize) {}
         
-        HiddenLayer(const HiddenLayer &target) {
+        Layer(const Layer &target) {
             *this = target;
         }
         
-        HiddenLayer(HiddenLayer &&target) {
+        Layer(Layer &&target) {
             *this = target;
         }
         
-        HiddenLayer &operator=(const HiddenLayer &target) {
+        Layer &operator=(const Layer &target) {
             size = target.size;
             nextLayerSize = target.nextLayerSize;
             activations = target.activation;
@@ -42,7 +43,7 @@ class NeuralNetwork {
             weights = target.weights;
         }
         
-        HiddenLayer &operator=(HiddenLayer &&target) {
+        Layer &operator=(Layer &&target) {
             size = std::move(target.size);
             nextLayerSize = std::move(target.nextLayerSize);
             activations = std::move(target.activations);
@@ -65,11 +66,13 @@ class NeuralNetwork {
         Matrix<long double> &&ComputeNextLayer() {
             Matrix<long double> retval;
             auto sigma = [=, &retval] (const Matrix<long double> &target) {
-                for (auto &it : target)  /// TODO Rica
-                    it = sigmoid(it);
+            //    for (auto &it : target)  /// TODO Rica
+            //        it = sigmoid(it);
             };
             
             retval = sigma(weights * activations + bias);
+            
+            return std::move(retval);
         }
         
         Matrix<long double> &&SetWeights(Matrix<long double> &&target) {
@@ -84,12 +87,37 @@ class NeuralNetwork {
             activations = std::move(target);
         }
         
-        ~HiddenLayer() {}
+        ~Layer() {}
 
+    protected:
+        size_t size;
+        Matrix<long double> activations;
+        
     private:
-        size_t size, nextLayerSize;
-        Matrix<long double> activations, weights;
+        size_t nextLayerSize;
+        Matrix<long double> weights;
         Matrix<biasType> bias;
+    };
+    
+    template <class sigmoid, class biasType = long double>
+    class InputLayer : Layer<sigmoid, biasType> {
+        using Layer<sigmoid, biasType>::Layer;
+        size_t nextLayerSize;
+        Matrix<long double> weights;
+        Matrix<biasType> bias;
+    };
+    
+    template <class sigmoid, class biasType = long double>
+    class HiddenLayer : Layer<sigmoid, biasType> {
+        using Layer<sigmoid, biasType>::Layer;
+        size_t nextLayerSize;
+        Matrix<long double> weights;
+        Matrix<biasType> bias;
+    };
+    
+    template <class sigmoid, class biasType = long double>
+    class OutputLayer : Layer<sigmoid, biasType> {
+        using Layer<sigmoid, biasType>::Layer;
     };
        
     int inputNeurons;
