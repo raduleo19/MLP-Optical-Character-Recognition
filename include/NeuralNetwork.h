@@ -23,9 +23,13 @@ class NeuralNetwork {
             (hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
     };
                   
-    void Train(const std::vector<int> &input, int correctValue) {};
+    void Train(const std::vector<int> &input, int correctValue) {
+        /// TODO now
+    };
 
-    int Classify(const std::vector<int> &input) const {};
+    int Classify(const std::vector<int> &input) const {
+        /// TODO now
+    };
 
    private:
     template <class sigmoid, class biasType = long double>
@@ -33,7 +37,9 @@ class NeuralNetwork {
         public:
         Layer() {}
         
-        Layer(const size_t &_size, const size_t &_nextLayerSize) {}
+        Layer(const size_t &_size, const size_t &_nextLayerSize) {
+            /// TODO now
+        }
         
         Layer(const Layer &target) {
             *this = target;

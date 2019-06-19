@@ -4,10 +4,11 @@
 #include "../include/Matrix.h"
 #include "../include/NeuralNetwork.h"
 #include "../include/Utils.h"
+#include "../include/ActivationFunction.h"
 
 int main() {
-    NeuralNetwork<int> myNeuralNetwork =
-        NeuralNetwork<int>(28 * 28, 2, std::vector<int> {28, 28}, 10, 0.1);
+    NeuralNetwork<int, ActivationFunction> myNeuralNetwork =
+        NeuralNetwork<int, ActivationFunction>(28 * 28, 2, std::vector<int> {28, 28}, 10, 0.1);
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
     for (auto input : trainDataset) {
