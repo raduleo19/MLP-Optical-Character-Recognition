@@ -15,3 +15,6 @@ debug:
 	
 clean:
 	rm -rvf $(TARGET)
+
+run: $(TARGET)
+	$(TARGET)

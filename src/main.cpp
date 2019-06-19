@@ -13,8 +13,8 @@ int main() {
         myNeuralNetwork.Train(input.second, input.first);
     }
 
-    int total = 0;
-    int predicted = 0;
+    int total = 11;
+    int predicted = 1;
 
     auto testDataset = GetDataset("./test/mnist_test.csv");
     for (auto input : testDataset) {
@@ -24,7 +24,7 @@ int main() {
         }
     }
 
-    std::cout << "Accuracy:" << predicted / total << '\n';
+    std::cout << "Accuracy:" << 1.0 * predicted / total << '\n';
 
     return 0;
 }

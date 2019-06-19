@@ -27,4 +27,5 @@ std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilena
         int correctValue = row[0];
         trainDataset.push_back({correctValue, std::vector<int>(row.begin() + 1, row.end())});
     }
+    return trainDataset;
 }
