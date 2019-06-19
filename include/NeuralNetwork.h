@@ -18,6 +18,7 @@ class NeuralNetwork {
         outputNeuronCount = _outputNeuronCount;
         learningRate = _learningRate;
 
+        /// TODO input and output
         for (int i = 0; i < hiddenLayersCount - 1; ++i)
             hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
                 hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
@@ -53,6 +54,8 @@ class NeuralNetwork {
             activations = target.activations;
             bias = target.bias;
             weights = target.weights;
+            
+            return *this;
         }
 
         Layer &operator=(Layer &&target) {
@@ -61,6 +64,8 @@ class NeuralNetwork {
             activations = std::move(target.activations);
             bias = std::move(target.bias);
             weights = std::move(target.weights);
+            
+            return *this;
         }
 
         Matrix<long double> &GetActivations() { return activations; }

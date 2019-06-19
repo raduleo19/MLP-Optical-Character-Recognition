@@ -31,12 +31,16 @@ class Matrix {
         numColumns = target.numColumns;
         numRows = target.numRows;
         container = target.container;
+        
+        return *this;
     }
 
     Matrix &operator=(Matrix &&target) {
         numColumns = target.numColumns;
         numRows = target.numRows;
         container = target.container;
+        
+        return *this;
     }
 
     Matrix &operator+(const Matrix &target) {
