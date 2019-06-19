@@ -2,6 +2,7 @@
 // Copyright 2019 Ciobanu Bogdan-Calin
 #pragma once
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -19,14 +20,15 @@ public:
         seed = std::chrono::system_clock::now().time_since_epoch().count();
         generator = std::ranlux24(seed);
     }
-    
-    long double operator()() {
-        long double retval = generator() / granularityConstant;
+
+    long double get_number() {
+        long double retval = (generator() % 2 ? (-1) : 1) * 6.0 *
+                              generator() / granularityConstant;
         return retval > 1.0 ? 1.0 : retval;
     }
     
 private:
     double seed;
     std::ranlux24 generator;
-    const int granularityConstant = 1e8;
+    const int granularityConstant = 1.0 * 1e8;
 };
