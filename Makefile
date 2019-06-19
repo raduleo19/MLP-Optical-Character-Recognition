@@ -1,5 +1,5 @@
 GXX = g++
-GFLAGS = -std=c++14 -O3
+GFLAGS = -std=c++14 -fpermissive
 TARGET = ./bin/ocr
 HEADERS = Utils.cpp
 H_DIR = ./include/

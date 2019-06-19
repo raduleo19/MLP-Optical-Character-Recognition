@@ -31,11 +31,23 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
-        /// TODO now
+        auto fitnessFunction = []() {
+            
+        };
     };
 
     int Classify(const std::vector<int> &input) const {
-        /// TODO now
+        long double max = -1.0;
+        int retval = -1;
+        
+        // TODO Try patch -fpermissive
+        
+        for (int i = 0; i < outputNeuronCount; ++i)
+            if (outputLayer.activations.data(i, 1) > max)
+                max = outputLayer.activations.data(i, 1),
+                retval = i;
+
+        return retval;
     };
 
    private:
@@ -138,6 +150,7 @@ class NeuralNetwork {
     template <class sigmoid, class biasType = long double>
     class OutputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
+        friend class NeuralNetwork<T, NormalizationFunction>;
     };
 
     int inputNeuronCount;

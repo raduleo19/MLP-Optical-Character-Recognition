@@ -17,6 +17,12 @@ class Matrix {
         numColumns = target[0].size();
     }
 
+    Matrix(std::vector<std::vector<T>> &&target) {
+        numRows = target.size();
+        numColumns = target[0].size();
+        container = std::move(target);
+    }
+    
     Matrix(int numRows, int numColumns)
         : numRows(numRows), numColumns(numColumns) {
         container =
@@ -81,6 +87,13 @@ class Matrix {
         }
         return *newMatrix;
     }
+
+    T data(int row, int col) {
+        return container[row][col];
+    }
+    
+    /// TODO @Rica Hadamard multiplication
+    /// TODO - operator
 
     ~Matrix() {}
 
