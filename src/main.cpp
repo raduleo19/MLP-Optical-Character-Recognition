@@ -7,7 +7,7 @@
 
 int main() {
     NeuralNetwork<int> myNeuralNetwork =
-        NeuralNetwork<int>(28 * 28, 2, 28, 10, 0.1);
+        NeuralNetwork<int>(28 * 28, 2, std::vector<int> {28, 28}, 10, 0.1);
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
     for (auto input : trainDataset) {
