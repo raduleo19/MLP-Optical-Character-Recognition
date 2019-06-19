@@ -6,8 +6,6 @@
 #include "../include/ActivationFunction.h"
 #include "../include/Matrix.h"
 
-/// TODO @Rica, try patch the -fpermissive warning
-
 template <class T, class NormalizationFunction, class TakeStep>
 class NeuralNetwork {
    public:
@@ -32,7 +30,7 @@ class NeuralNetwork {
                 hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
 
         hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-                HiddenLayersSizes[hiddenLayersCount - 1], outputNeuronCount)));
+                hiddenLayersSizes[hiddenLayersCount - 1], outputNeuronCount)));
 
         setRandomStartingPoint();
     };
@@ -44,7 +42,7 @@ class NeuralNetwork {
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
 
-        auto fitnessFunction = [=]() {
+        auto fitnessFunction = [&]() {
             long double delta = 0;
 
             for (int i = 0; i < outputNeuronCount; ++i) {
@@ -60,7 +58,7 @@ class NeuralNetwork {
         /// TODO interface with TakeStep class (backpropagation)
     };
 
-    int Classify(const std::vector<T> &input) const {
+    int Classify(const std::vector<T> &input) {
         forwardPropagate(input);
         long double max = -1.0;
         int retval = -1;
@@ -166,6 +164,7 @@ class NeuralNetwork {
     template <class sigmoid, class biasType = long double>
     class HiddenLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
+        friend class NeuralNetwork<T, NormalizationFunction, TakeStep>;
         size_t nextLayerSize;
         Matrix<long double> weights;
         Matrix<biasType> bias;
@@ -182,9 +181,9 @@ class NeuralNetwork {
             inputLayer.activations.data(i, 1) = NormalizationFunction(input[i]);
 
         if (hiddenLayersCount)
-            hiddenLayers[0] = std::move(inputLayer.ComputeNextLayer());
+            hiddenLayers[0].activations = std::move(inputLayer.ComputeNextLayer());
         else
-            outputLayer = std::move(inputLayer.ComputeNextLayer());
+            outputLayer.activations = std::move(inputLayer.ComputeNextLayer());
     }
 
     void setRandomStartingPoint() {}
