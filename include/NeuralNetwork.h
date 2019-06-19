@@ -6,7 +6,7 @@
 #include "../include/Matrix.h"
 #include "../include/ActivationFunction.h"
 
-template <class T, class normalizationFunction>
+template <class T, class NormalizationFunction>
 class NeuralNetwork {
    public:
         NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
@@ -19,7 +19,7 @@ class NeuralNetwork {
         learningRate = _learningRate;
         
         for (int i = 0; i < hiddenLayersCount - 1; ++i)
-            hiddenLayers.push_back(std::move(HiddenLayer<normalizationFunction>
+            hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>
             (hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
     };
                   
@@ -136,7 +136,7 @@ class NeuralNetwork {
     int inputNeuronCount;
     int hiddenLayersCount;
     std::vector<int> hiddenLayersSizes;
-    std::vector<HiddenLayer<normalizationFunction> > hiddenLayers;
+    std::vector<HiddenLayer<NormalizationFunction> > hiddenLayers;
     int outputNeuronCount;
     double learningRate;
 };
