@@ -66,8 +66,7 @@ class NeuralNetwork {
         Matrix<long double> &&ComputeNextLayer() {
             Matrix<long double> retval;
             auto sigma = [=, &retval] (const Matrix<long double> &target) {
-            //    for (auto &it : target)  /// TODO Rica
-            //        it = sigmoid(it);
+                target.applyFunction<sigmoid>();
             };
             
             retval = sigma(weights * activations + bias);
@@ -92,11 +91,6 @@ class NeuralNetwork {
     protected:
         size_t size;
         Matrix<long double> activations;
-        
-    private:
-        size_t nextLayerSize;
-        Matrix<long double> weights;
-        Matrix<biasType> bias;
     };
     
     template <class sigmoid, class biasType = long double>

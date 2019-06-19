@@ -80,6 +80,15 @@ class Matrix {
 
     ~Matrix() {}
 
+    template <class F>
+    void applyFunction() {
+        for (auto &row : container) {
+            for (auto &column : row) {
+                column = F(column);
+            }
+        }
+    }
+
    private:
     std::vector<std::vector<T>> container;
     size_t numRows;
