@@ -3,7 +3,7 @@
 
 #include <vector>
 
-template <class T = int>
+template <class T>
 class NeuralNetwork {
    public:
     NeuralNetwork(int inputNeurons, int hiddenLayers, int hiddenNeuronsPerLayer,
