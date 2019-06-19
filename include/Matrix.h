@@ -27,7 +27,7 @@ public:
     
     matrix &operator * (const int &scalar) {}
     
-    void transpose() {}
+    matrix &transpose() {}
     
     matrix &hadamard_multiplication(const matrix &target) {}
     
