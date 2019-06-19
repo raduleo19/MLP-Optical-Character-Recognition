@@ -119,8 +119,10 @@ class NeuralNetwork {
 
         Matrix<long double> &&ComputeNextLayer() {
             Matrix<long double> retval;
-            auto sigma = [=, &retval](const Matrix<long double> &target) {
+            auto sigma = [&, retval](Matrix<long double> &target) {
                 target.applyFunction<sigmoid>();
+                
+                return target;
             };
 
             retval = sigma(weights * activations + bias);
@@ -178,12 +180,15 @@ class NeuralNetwork {
 
     void forwardPropagate(const std::vector<T> &input) {
         for (int i = 0; i < inputNeuronCount; ++i)
-            inputLayer.activations.data(i, 1) = NormalizationFunction(input[i]);
+            inputLayer.activations.data(i, 1) = sigmoidFunction(input[i]);
 
-        if (hiddenLayersCount)
+        if (hiddenLayersCount) {
             hiddenLayers[0].activations = std::move(inputLayer.ComputeNextLayer());
-        else
+            
+        } else {
             outputLayer.activations = std::move(inputLayer.ComputeNextLayer());
+            return;
+        }
     }
 
     void setRandomStartingPoint() {}
@@ -193,5 +198,6 @@ class NeuralNetwork {
     OutputLayer<NormalizationFunction> outputLayer;
     std::vector<int> hiddenLayersSizes;
     std::vector<HiddenLayer<NormalizationFunction> > hiddenLayers;
+    NormalizationFunction sigmoidFunction;
     double learningRate;
 };

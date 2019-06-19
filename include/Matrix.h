@@ -96,9 +96,10 @@ class Matrix {
 
     template <class F>
     void applyFunction() {
+        F function;
         for (auto &row : container) {
             for (auto &column : row) {
-                column = F(column);
+                column = function(column);
             }
         }
     }
