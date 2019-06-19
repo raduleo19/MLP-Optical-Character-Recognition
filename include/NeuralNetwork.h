@@ -38,9 +38,9 @@ class NeuralNetwork {
         Layer() {}
 
         Layer(const size_t &_size, const size_t &_nextLayerSize) {
-            activations = Matrix(_size, 1);
-            bias = Matrix(_size, 1);
-            weights = Matrix(_nextLayerSize, _size);
+            activations = Matrix<long double>(_size, 1);
+            bias = Matrix<long double>(_size, 1);
+            weights = Matrix<long double>(_nextLayerSize, _size);
         }
 
         Layer(const Layer &target) { *this = target; }
