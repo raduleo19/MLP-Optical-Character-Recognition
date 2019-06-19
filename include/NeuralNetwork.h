@@ -75,15 +75,15 @@ class NeuralNetwork {
             return std::move(retval);
         }
         
-        Matrix<long double> &&SetWeights(Matrix<long double> &&target) {
+        void SetWeights(Matrix<long double> &&target) {
             weights = std::move(target);
         }
         
-        Matrix<biasType> &&SetBias(Matrix<biasType> &&target) {
+        void SetBias(Matrix<biasType> &&target) {
             bias = std::move(target);
         }
         
-        Matrix<long double> &&SetActivations(Matrix<long double> &&target) {
+        void SetActivations(Matrix<long double> &&target) {
             activations = std::move(target);
         }
         
