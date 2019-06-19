@@ -18,7 +18,6 @@ int main() {
 
     auto testDataset = GetDataset("./test/mnist_test.csv");
     for (auto input : testDataset) {
-        total++;
         if (input.first == myNeuralNetwork.Classify(input.second)) {
             predicted++;
         }
