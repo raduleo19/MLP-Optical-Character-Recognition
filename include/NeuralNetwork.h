@@ -8,7 +8,7 @@
 #include "../include/Matrix.h"
 #include "../include/Utils.h"
 
-template <class T, class NormalizationFunction, class TakeStep>
+template <class T, class NormalizationFunction, class Backpropagator>
 class NeuralNetwork {
 #ifdef NNDIAG
     friend class NeuralDiagnostics;
@@ -28,7 +28,8 @@ class NeuralNetwork {
             std::move(InputLayer<NormalizationFunction>(inputNeuronCount));
 
         outputLayer = std::move(OutputLayer<NormalizationFunction>(
-            hiddenLayersCount ? hiddenLayersSizes[hiddenLayersCount - 1] : inputNeuronCount,
+            hiddenLayersCount ? hiddenLayersSizes[hiddenLayersCount - 1]
+                              : inputNeuronCount,
             outputNeuronCount));
 
         hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
@@ -42,61 +43,30 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
+        forwardPropagate(input);
         Matrix<long double> desiredOutput(outputNeuronCount, 1);
 
         for (int i = 0; i < outputNeuronCount; ++i)
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
 
-        auto fitnessFunctionLog = [&]() {
-            long double delta = 0;
+        std::vector<Matrix<long double>> weights;
+        std::vector<Matrix<long double>> biases;
+        std::vector<Matrix<long double>> activations;
 
-            for (int i = 0; i < outputNeuronCount; ++i) {
-                long double epsilon = outputLayer.activations.data(i, 1) -
-                                      desiredOutput.data(i, 1);
-                delta += epsilon * epsilon;
-            }
-
-            return delta / 2;
-        };
-
-        auto fitnessFunction = [&]() {
-            std::vector<double> deltas;
-
-            for (int i = 0; i < outputNeuronCount; ++i) {
-                long double epsilon = outputLayer.activations.data(i, 1) -
-                                      desiredOutput.data(i, 1);
-                deltas.push_back(epsilon * epsilon);
-            }
-
-            return deltas;
-        };
-
-        forwardPropagate(input);
-
-        fitnessLog.push_back(fitnessFunctionLog());
-        fitnessRecord = fitnessFunction();
-        auto backpropagator = TakeStep();
-
-        backpropagator.backpropagate(
-            outputLayer.weights, outputLayer.bias, outputLayer.activations,
-            fitnessRecord, hiddenLayers[hiddenLayersCount - 1].weights,
-            hiddenLayers[hiddenLayersCount - 1].bias,
-            hiddenLayers[hiddenLayersCount - 1].activations);
-
-        for (size_t i = hiddenLayersCount - 1; i >= 1; i++) {
-            backpropagator.backpropagate(
-                hiddenLayers[i].weights, hiddenLayers[i].bias,
-                hiddenLayers[i].activations, fitnessRecord,
-                hiddenLayers[i - 1].weights, hiddenLayers[i - 1].bias,
-                hiddenLayers[i - 1].activations);
+        weights.push_back(inputLayer.GetWeights());
+        biases.push_back(inputLayer.GetActivations());
+        activations.push_back(inputLayer.GetActivations());
+        for (auto it : hiddenLayers) {
+            weights.push_back(it.GetWeights());
+            biases.push_back(it.GetActivations());
+            activations.push_back(it.GetActivations());
         }
+        weights.push_back(outputLayer.GetWeights());
+        biases.push_back(outputLayer.GetActivations());
+        activations.push_back(outputLayer.GetActivations());
 
-        /// Check computeNextLayer for formula. inputLayer doesn't have weights or biases
-//         backpropagator.backpropagate(
-//             hiddenLayers[0].weights, hiddenLayers[0].bias,
-//             hiddenLayers[0].activations, fitnessRecord, inputLayer.weights,
-//             inputLayer.bias, inputLayer.activations);
+        backpropagator.Backpropagate(weights, biases, activations, desiredOutput, learningRate);
     };
 
     int Classify(const std::vector<T> &input) {
@@ -196,18 +166,20 @@ class NeuralNetwork {
     template <class sigmoid, class biasType = int>
     class InputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, TakeStep>;
+        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
         friend class Backpropagate;
-    protected:
+
+       protected:
         size_t nextLayerSize;
     };
 
     template <class sigmoid, class biasType = int>
     class HiddenLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, TakeStep>;
+        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
         friend class Backpropagate;
-    protected:
+
+       protected:
         size_t nextLayerSize;
         Matrix<long double> weights;
         Matrix<biasType> bias;
@@ -216,9 +188,10 @@ class NeuralNetwork {
     template <class sigmoid, class biasType = int>
     class OutputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, TakeStep>;
+        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
         friend class Backpropagate;
-    protected:
+
+       protected:
         Matrix<long double> weights;
         Matrix<biasType> bias;
     };
@@ -232,13 +205,15 @@ class NeuralNetwork {
                 std::move(inputLayer.ComputeNextLayer(hiddenLayers[0]));
 
             for (int i = 1; i < hiddenLayersCount - 1; ++i)
-                hiddenLayers[i].activations =
-                    std::move(hiddenLayers[i - 1].ComputeNextLayer(hiddenLayers[i]));
+                hiddenLayers[i].activations = std::move(
+                    hiddenLayers[i - 1].ComputeNextLayer(hiddenLayers[i]));
 
-            outputLayer.activations = std::move(
-                hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer(outputLayer));
+            outputLayer.activations =
+                std::move(hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer(
+                    outputLayer));
         } else {
-            outputLayer.activations = std::move(inputLayer.ComputeNextLayer(outputLayer));
+            outputLayer.activations =
+                std::move(inputLayer.ComputeNextLayer(outputLayer));
         }
     }
 
@@ -265,9 +240,8 @@ class NeuralNetwork {
     InputLayer<NormalizationFunction> inputLayer;
     OutputLayer<NormalizationFunction> outputLayer;
     std::vector<int> hiddenLayersSizes;
-    std::vector<HiddenLayer<NormalizationFunction> > hiddenLayers;
+    std::vector<HiddenLayer<NormalizationFunction>> hiddenLayers;
     NormalizationFunction sigmoidFunction;
     double learningRate;
-    std::vector<double> fitnessLog;
     std::vector<double> fitnessRecord;
 };
