@@ -65,7 +65,7 @@ class NeuralNetwork {
         fitnessRecord.push_back(fitnessFunction());
         auto backpropagator = TakeStep();
 
-        // TODO: Solve Errors
+        // TODO: Solve Errors created by biasType
         backpropagator.backpropagate(
             outputLayer.weights, outputLayer.bias, outputLayer.activations,
             fitnessRecord, hiddenLayers[hiddenLayersCount - 1].weights,
