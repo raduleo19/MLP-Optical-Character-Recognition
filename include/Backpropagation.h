@@ -8,26 +8,24 @@
 // Gradient Descent Backpropagate
 class Backpropagate {
    public:
-    void backpropagate(std::vector<Matrix<long double>> &weights,
-                       std::vector<Matrix<long double>> &biases,
-                       std::vector<Matrix<long double>> &activations,
-                       Matrix<long double> desiredOutput,
+    void backpropagate(std::vector<Matrix> &weights,
+                       std::vector<Matrix> &biases,
+                       std::vector<Matrix> &activations,
+                       Matrix desiredOutput,
                        long double learningRate) {
 
         size_t layersCount = weights.size();
 
-        std::vector<Matrix<long double>> dCdW(layersCount - 1);
-        std::vector<Matrix<long double>> dCdB(layersCount - 1);
+        std::vector<Matrix> dCdW(layersCount - 1);
+        std::vector<Matrix> dCdB(layersCount - 1);
         dCdB[layersCount - 2] =
             (activations[layersCount - 1] - desiredOutput)
                 .HadamardMultiply(activations[layersCount - 2] *
                                       weights[layersCount - 2] +
-                                  biases[layersCount - 2]);
-        dCdB[layersCount - 2].applyFunction<DerivativeActivationFunction>();
+                                  biases[layersCount - 2]).ApplyFunction<DerivativeActivationFunction>();
 
         for (int i = layersCount - 3; i >= 0; i--) {
-            auto temp = activations[i] * weights[i] + biases[i];
-            temp.applyFunction<DerivativeActivationFunction>();
+            auto temp = activations[i] * weights[i] + biases[i].ApplyFunction<DerivativeActivationFunction>();
             dCdB[i] = (dCdB[i + 1] * weights[i + 1].Transpose())
                           .HadamardMultiply(temp);
         }

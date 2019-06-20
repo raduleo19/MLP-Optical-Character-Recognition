@@ -2,72 +2,79 @@
 // Copyright 2019 Rica Radu Leonard
 
 #pragma once
+#include <ctype.h>
 
-#include <iostream>
-#include <vector>
-
-template <class T>
 class Matrix {
    public:
     Matrix() {}
 
-    Matrix(const std::vector<std::vector<T>> &target) {
-        container = target;
-        numRows = target.size();
-        numColumns = target[0].size();
-    }
-
-    Matrix(std::vector<std::vector<T>> &&target) {
-        numRows = target.size();
-        numColumns = target[0].size();
-        container = std::move(target);
-    }
-
-    Matrix(int numRows, int numColumns)
+    Matrix(unsigned numRows, unsigned numColumns)
         : numRows(numRows), numColumns(numColumns) {
-        container =
-            std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns));
+        container = std::vector<std::vector<long double>>(
+            numRows, std::vector<long double>(numColumns));
     }
 
-    Matrix(const Matrix &target) { *this = target; }
+    Matrix(const std::vector<std::vector<long double>> &container) {
+        numRows = container.size();
+        numColumns = container[0].size();
+        this->container = container;
+    }
 
-    Matrix(Matrix &&target) { *this = target; }
+    Matrix(const Matrix &other) {
+        this->numRows = other.numRows;
+        this->numColumns = other.numColumns;
+        this->container = other.container;
+    }
 
-    Matrix &operator=(const Matrix &target) {
-        numColumns = target.numColumns;
-        numRows = target.numRows;
-        container = target.container;
+    ~Matrix();
 
+    // Matrix Operations
+    Matrix &operator=(const Matrix &other) {
+        this->numRows = other.numRows;
+        this->numColumns = other.numColumns;
+        this->container = other.container;
         return *this;
     }
 
-    Matrix &operator=(Matrix &&target) {
-        numColumns = target.numColumns;
-        numRows = target.numRows;
-        container = target.container;
-
-        return *this;
-    }
-
-    Matrix &operator+(auto target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
-        for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < numColumns; j++) {
-                newMatrix.data(i, j) = data(i, j) + target.data(i, j);
+    Matrix operator+(const Matrix &other) const {
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
+                newMatrix.container[i][j] =
+                    this->container[i][j] + other.container[i][j];
             }
         }
         return newMatrix;
     }
 
-    void operator+=(const Matrix &target) { *this = (*this) + target; }
+    Matrix &operator+=(const Matrix &other) {
+        *this = (*this) + other;
+        return *this;
+    }
 
-    Matrix &operator*(const Matrix &target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
+    Matrix operator-(const Matrix &other) const {
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
+                newMatrix.container[i][j] =
+                    this->container[i][j] - other.container[i][j];
+            }
+        }
+        return newMatrix;
+    }
+
+    Matrix &operator-=(const Matrix &other) {
+        *this = (*this) - other;
+        return *this;
+    }
+
+    Matrix operator*(const Matrix &other) const {
+        Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < target.numColumns; j++) {
-                T sum = 0;
+            for (size_t j = 0; j < other.numColumns; j++) {
+                long double sum = 0;
                 for (size_t k = 0; k < numColumns; ++k) {
-                    sum += container[i][k] * target.container[k][j];
+                    sum += container[i][k] * other.container[k][j];
                 }
                 newMatrix.container[i][j] = sum;
             }
@@ -75,71 +82,61 @@ class Matrix {
         return newMatrix;
     }
 
-    void operator*=(const Matrix &target) { return (*this) * target; }
+    Matrix &operator*=(const Matrix &other) {
+        *this = (*this) * other;
+        return *this;
+    }
 
-    Matrix &operator*(const T &target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
-        for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < numColumns; j++) {
-                newMatrix.container[i][j] = container[i][j] * target;
+    Matrix Transpose() const {
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
+                newMatrix.container[i][j] = this->container[j][i];
             }
         }
         return newMatrix;
     }
 
-    void operator*=(const T &target) { return (*this) * target; }
-
-    Matrix &operator-(auto target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
-        for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < numColumns; j++) {
-                newMatrix.data(i, j) = data(i, j) - target.data(i, j);
-            }
-        }
-        return newMatrix;
-    }
-
-    void operator-=(const Matrix &target) { *this = (*this) - target; }
-
-    Matrix &Transpose() const {
-        static Matrix<T> newMatrix(numRows, numColumns);
-        for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < numColumns; j++) {
-                newMatrix.container[i][j] = container[j][i];
-            }
-        }
-        return newMatrix;
-    }
-
-    Matrix &HadamardMultiply(const Matrix &target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
-        for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < numColumns; j++) {
+    Matrix HadamardMultiply(const Matrix &other) const {
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
                 newMatrix.container[i][j] =
-                    container[i][j] * target.container[i][j];
+                    this->container[i][j] * other.container[i][j];
             }
         }
         return newMatrix;
     }
 
-    T &data(int row, int col) { return container[row][col]; }
-
-    std::pair<int, int> size() { return {numRows, numColumns}; }
-
-    ~Matrix() {}
-
-    template <class F>
-    void applyFunction() {
-        F function;
-        for (auto &row : container) {
-            for (auto &column : row) {
-                column = function(column);
+    template <class Func>
+    Matrix ApplyFunction() const {
+        Func function;
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
+                newMatrix.container[i][j] = function(this->container[j][i]);
             }
         }
+        return newMatrix;
     }
 
-   private:
-    std::vector<std::vector<T>> container;
+    // Scalar Operations
+    Matrix operator*(const long double &other) const {
+        Matrix newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; ++i) {
+            for (size_t j = 0; j < numColumns; ++j) {
+                newMatrix.container[i][j] = this->container[i][j] * other;
+            }
+        }
+        return newMatrix;
+    }
+
+    Matrix &operator*=(const long double &other) {
+        *this = (*this) * other;
+        return *this;
+    }
+
+    std::vector<std::vector<long double>> container;
     size_t numRows;
     size_t numColumns;
 };

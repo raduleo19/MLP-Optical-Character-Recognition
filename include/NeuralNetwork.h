@@ -44,15 +44,15 @@ class NeuralNetwork {
 
     void Train(const std::vector<int> &input, int correctValue) {
         forwardPropagate(input);
-        Matrix<long double> desiredOutput(outputNeuronCount, 1);
+        Matrix desiredOutput(outputNeuronCount, 1);
 
         for (int i = 0; i < outputNeuronCount; ++i)
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
 
-        std::vector<Matrix<long double>> weights;
-        std::vector<Matrix<long double>> biases;
-        std::vector<Matrix<long double>> activations;
+        std::vector<Matrix> weights;
+        std::vector<Matrix> biases;
+        std::vector<Matrix> activations;
 
         weights.push_back(inputLayer.GetWeights());
         biases.push_back(inputLayer.GetActivations());
@@ -100,13 +100,13 @@ class NeuralNetwork {
         Layer() {}
 
         Layer(const size_t &_size) {
-            activations = Matrix<long double>(_size, 1);
+            activations = Matrix(_size, 1);
         }
 
         Layer(const size_t &_previousLayerSize, const size_t &_size) {
-            activations = Matrix<long double>(_size, 1);
-            bias = Matrix<biasType>(_size, 1);
-            weights = Matrix<long double>(_size, _previousLayerSize);
+            activations = Matrix(_size, 1);
+            bias = Matrix(_size, 1);
+            weights = Matrix(_size, _previousLayerSize);
         }
 
         Layer(const Layer &target) { *this = target; }
@@ -133,32 +133,27 @@ class NeuralNetwork {
             return *this;
         }
 
-        Matrix<long double> &GetActivations() { return activations; }
+        Matrix &GetActivations() { return activations; }
 
-        Matrix<biasType> &GetBias() { return bias; }
+        Matrix &GetBias() { return bias; }
 
-        Matrix<long double> &GetWeights() { return weights; }
+        Matrix &GetWeights() { return weights; }
 
-        Matrix<long double> &&ComputeNextLayer(Layer<sigmoid> next) {
-            Matrix<long double> retval;
-            auto sigma = [&, retval](Matrix<long double> &target) {
-                target.applyFunction<sigmoid>();
+        Matrix &&ComputeNextLayer(Layer<sigmoid> next) {
+            Matrix retval;
 
-                return target;
-            };
-
-            retval = sigma(next.weights * activations + next.bias);
+            retval = (next.weights * activations + next.bias).ApplyFunction<NormalizationFunction>();
 
             return std::move(retval);
         }
 
-        void SetWeights(Matrix<long double> &&target) {
+        void SetWeights(Matrix &&target) {
             weights = std::move(target);
         }
 
-        void SetBias(Matrix<biasType> &&target) { bias = std::move(target); }
+        void SetBias(Matrix &&target) { bias = std::move(target); }
 
-        void SetActivations(Matrix<long double> &&target) {
+        void SetActivations(Matrix &&target) {
             activations = std::move(target);
         }
 
@@ -166,12 +161,12 @@ class NeuralNetwork {
 
        protected:
         size_t size;
-        Matrix<long double> activations;
+        Matrix activations;
 
        private:
         size_t nextLayerSize;
-        Matrix<long double> weights;
-        Matrix<biasType> bias;
+        Matrix weights;
+        Matrix bias;
     };
 
     template <class sigmoid, class biasType = long double>
@@ -192,8 +187,8 @@ class NeuralNetwork {
 
        protected:
         size_t nextLayerSize;
-        Matrix<long double> weights;
-        Matrix<biasType> bias;
+        Matrix weights;
+        Matrix bias;
     };
 
     template <class sigmoid, class biasType = long double>
@@ -203,8 +198,8 @@ class NeuralNetwork {
         friend class Backpropagate;
 
        protected:
-        Matrix<long double> weights;
-        Matrix<biasType> bias;
+        Matrix weights;
+        Matrix bias;
     };
 
     void forwardPropagate(const std::vector<T> &input) {
