@@ -49,43 +49,42 @@ class Matrix {
         return *this;
     }
 
-    Matrix &operator+(const Matrix &target) {
-        Matrix<T> *newMatrix = new Matrix<T>(numRows, numColumns);
+    Matrix &operator+(auto target) {
+        static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < numColumns; j++) {
-                newMatrix->container[i][j] =
-                    container[i][j] + target.container[i][j];
+                newMatrix.data(i, j) = data(i, j) + target.data(i, j);
             }
         }
-        return *newMatrix;
+        return newMatrix;
     }
 
     void operator+=(const Matrix &target) { *this = (*this) + target; }
 
     Matrix &operator*(const Matrix &target) {
-        Matrix<T> *newMatrix = new Matrix<T>(numRows, target.numColumns);
+        static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < target.numColumns; j++) {
                 T sum = 0;
                 for (size_t k = 0; k < numColumns; ++k) {
                     sum += container[i][k] * target.container[k][j];
                 }
-                newMatrix->container[i][j] = sum;
+                newMatrix.container[i][j] = sum;
             }
         }
-        return *newMatrix;
+        return newMatrix;
     }
 
     void operator*=(const Matrix &target) { return (*this) * target; }
 
     Matrix &operator*(const T &target) {
-        Matrix<T> *newMatrix = new Matrix<T>(numRows, target.numColumns);
+        static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < target.numColumns; j++) {
-                newMatrix->container[i][j] = container[i][j] * target;
+                newMatrix.container[i][j] = container[i][j] * target;
             }
         }
-        return *newMatrix;
+        return newMatrix;
     }
 
     void operator*=(const T &target) { return (*this) * target; }
@@ -97,24 +96,24 @@ class Matrix {
     void operator-=(const Matrix &target) { *this = (*this) - target; }
 
     Matrix &Transpose() const {
-        Matrix<T> *newMatrix = new Matrix<T>(numRows, numColumns);
+        static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < numColumns; j++) {
-                newMatrix->container[i][j] = container[j][i];
+                newMatrix.container[i][j] = container[j][i];
             }
         }
-        return *newMatrix;
+        return newMatrix;
     }
 
     Matrix &HadamardMultiply(const Matrix &target) {
-        Matrix<T> *newMatrix = new Matrix<T>(numRows, numColumns);
+        static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < numColumns; j++) {
-                newMatrix->container[i][j] =
+                newMatrix.container[i][j] =
                     container[i][j] * target.container[i][j];
             }
         }
-        return *newMatrix;
+        return newMatrix;
     }
 
     T &data(int row, int col) { return container[row][col]; }

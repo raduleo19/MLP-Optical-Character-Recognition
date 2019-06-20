@@ -5,6 +5,7 @@
 #include <vector>
 
 class Backpropagate {
+public:
     void backpropagate(Matrix<long double> &outputWeights,
                        Matrix<int> &outputBiases,
                        Matrix<long double> &outputActivations,
