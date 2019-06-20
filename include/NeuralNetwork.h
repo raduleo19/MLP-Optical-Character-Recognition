@@ -18,6 +18,8 @@ class NeuralNetwork {
     NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
                   std::vector<int> _hiddenLayersSizes, int _outputNeuronCount,
                   double _learningRate) {
+        int hiddenLayersCount;
+        std::vector<int> hiddenLayersSizes;
         inputNeuronCount = _inputNeuronCount;
         hiddenLayersCount = _hiddenLayersCount;
         hiddenLayersSizes = std::move(_hiddenLayersSizes);
@@ -80,7 +82,8 @@ class NeuralNetwork {
 
    protected:
     class Layer {
-    public:
+        friend class NeuralNetwork<T, Sigmoid, Backpropagator>;
+    protected:
         Matrix<long double> activations, bias, weights;
 
         Layer() {}
@@ -99,6 +102,8 @@ class NeuralNetwork {
             activations = target.activations;
             bias = target.bias;
             weights = target.weights;
+            
+            return *this;
         }
     };
 
@@ -134,11 +139,9 @@ class NeuralNetwork {
             randomizeMatrix(it -> weights),
             randomizeMatrix(it -> bias);
     }
-
-    int inputNeuronCount, outputNeuronCount, hiddenLayersCount;
-    std::vector<int> hiddenLayersSizes;
+    
+    int inputNeuronCount, outputNeuronCount;
     double learningRate;
-    std::vector<double> fitnessRecord;
     std::vector<Layer> neuralLayers;
     size_t neuralNetworkSize;
 };
