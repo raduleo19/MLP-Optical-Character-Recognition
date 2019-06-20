@@ -110,19 +110,20 @@ class NeuralNetwork {
     };
 
     void forwardPropagate(const std::vector<long double> &input) {
-        // auto sigma = [=](Matrix &target) {
-        //     return target.ApplyFunction<Sigmoid>();
-        // };
+        auto sigma = [=](Matrix target) {
+            return target.ApplyFunction<Sigmoid>();
+        };
 
         for (auto it = input.begin(); it != input.end(); ++it)
             neuralLayers.front().activations.data(it - input.begin(), 1) = *it;
 
-        // neuralLayers.front().activations =
-        //     sigma(neuralLayers.front().activations);
+        neuralLayers.front().activations =
+            sigma(neuralLayers.front().activations);
 
-        // for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
-        //     it->activations =
-        //         sigma(it->weights * (it - 1)->activations + it->bias);
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end();
+        ++it)
+            it->activations =
+                sigma(it->weights * (it - 1)->activations + it->bias);
     }
 
     void setRandomStartingPoint() {
