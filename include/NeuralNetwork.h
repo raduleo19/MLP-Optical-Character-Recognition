@@ -8,7 +8,7 @@
 #include "../include/Matrix.h"
 #include "../include/Utils.h"
 
-template <class T, class NormalizationFunction, class Backpropagator>
+template <class T, class Sigmoid, class Backpropagator>
 class NeuralNetwork {
 #ifdef NNDIAG
     friend class NeuralDiagnostics;
@@ -18,209 +18,114 @@ class NeuralNetwork {
     NeuralNetwork(int _inputNeuronCount, int _hiddenLayersCount,
                   std::vector<int> _hiddenLayersSizes, int _outputNeuronCount,
                   double _learningRate) {
+        int hiddenLayersCount;
+        std::vector<int> hiddenLayersSizes;
+
         inputNeuronCount = _inputNeuronCount;
         hiddenLayersCount = _hiddenLayersCount;
-        hiddenLayersSizes = std::move(_hiddenLayersSizes);
+        hiddenLayersSizes = _hiddenLayersSizes;
         outputNeuronCount = _outputNeuronCount;
         learningRate = _learningRate;
+        neuralNetworkSize = 2 + hiddenLayersCount;
 
-        inputLayer =
-            std::move(InputLayer<NormalizationFunction>(inputNeuronCount));
-
-        outputLayer = std::move(OutputLayer<NormalizationFunction>(
-            hiddenLayersCount ? hiddenLayersSizes[hiddenLayersCount - 1]
-                              : inputNeuronCount,
-            outputNeuronCount));
-
-        hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-            inputNeuronCount, hiddenLayersSizes[0])));
-
-        for (int i = 1; i < hiddenLayersCount; ++i)
-            hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-                hiddenLayersSizes[i - 1], hiddenLayersSizes[i])));
+        neuralLayers.push_back(Layer(inputNeuronCount));
+        if (hiddenLayersCount) {
+            neuralLayers.push_back(Layer(inputNeuronCount,
+                                         hiddenLayersSizes[0]));
+            for (int i = 1; i < hiddenLayersCount; ++i)
+                neuralLayers.push_back(Layer(hiddenLayersSizes[i - 1],
+                                       hiddenLayersSizes[i]));
+            neuralLayers.push_back(Layer(hiddenLayersSizes.back(),
+                                         outputNeuronCount));
+        } else {
+            neuralLayers.push_back(Layer(inputNeuronCount, outputNeuronCount));
+        }
 
         setRandomStartingPoint();
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
+        Matrix<long double> desiredOutput(outputNeuronCount, 1);
+        std::vector<Matrix<long double>> weights;
+        std::vector<Matrix<long double>> biases;
+        std::vector<Matrix<long double>> activations;
+
         forwardPropagate(input);
-        Matrix desiredOutput(outputNeuronCount, 1);
 
         for (int i = 0; i < outputNeuronCount; ++i)
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
 
-        std::vector<Matrix> weights;
-        std::vector<Matrix> biases;
-        std::vector<Matrix> activations;
-
-        weights.push_back(inputLayer.GetWeights());
-        biases.push_back(inputLayer.GetActivations());
-        activations.push_back(inputLayer.GetActivations());
-        for (auto it : hiddenLayers) {
-            weights.push_back(it.GetWeights());
-            biases.push_back(it.GetActivations());
-            activations.push_back(it.GetActivations());
-        }
-        weights.push_back(outputLayer.GetWeights());
-        biases.push_back(outputLayer.GetActivations());
-        activations.push_back(outputLayer.GetActivations());
+        for (auto i : neuralLayers)
+            weights.push_back(i.weights),
+            biases.push_back(i.bias),
+            activations.push_back(i.activations);
 
         auto backpropagator = Backpropagator();
         backpropagator.backpropagate(weights, biases, activations,
-                                     desiredOutput, learningRate);
+                                     neuralNetworkSize, desiredOutput,
+                                     learningRate);
 
-        inputLayer.SetWeights(std::move(weights[0]));
-        inputLayer.SetBias(std::move(biases[0]));
-        for (unsigned i = 1; i < weights.size() - 1; ++i) {
-            hiddenLayers[i - 1].SetWeights(std::move(weights[i]));
-            hiddenLayers[i - 1].SetBias(std::move(biases[i]));
-        }
-        outputLayer.SetWeights(std::move(weights[weights.size() - 1]));
-        outputLayer.SetBias(std::move(biases[weights.size() - 1]));
+        for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
+            it -> weights = weights[it - neuralLayers.begin()],
+            it -> bias = biases[it - neuralLayers.begin()];
     };
 
     int Classify(const std::vector<T> &input) {
-        forwardPropagate(input);
-
         long double max = -1.0;
         int retval = -1;
 
+        forwardPropagate(input);
+
         for (int i = 0; i < outputNeuronCount; ++i)
-            if (outputLayer.activations.data(i, 1) > max)
-                max = outputLayer.activations.data(i, 1), retval = i;
+            if (neuralLayers.back().activations.data(i, 1) > max)
+                max = neuralLayers.back().activations.data(i, 1), retval = i;
 
         return retval;
     };
 
    protected:
-    template <class sigmoid, class biasType = long double>
     class Layer {
-       public:
+        friend class NeuralNetwork<T, Sigmoid, Backpropagator>;
+    protected:
+        Matrix<long double> activations, bias, weights;
+
         Layer() {}
 
-        Layer(const size_t &_size) {
-            activations = Matrix(_size, 1);
+        Layer(const size_t &size) {
+            activations = Matrix<long double>(size, 1);
         }
 
-        Layer(const size_t &_previousLayerSize, const size_t &_size) {
-            activations = Matrix(_size, 1);
-            bias = Matrix(_size, 1);
-            weights = Matrix(_size, _previousLayerSize);
+        Layer(const size_t &previousLayerSize, const size_t &size) {
+            activations = Matrix<long double>(size, 1);
+            bias = Matrix<long double>(size, 1);
+            weights = Matrix<long double>(size, previousLayerSize);
         }
 
-        Layer(const Layer &target) { *this = target; }
-
-        Layer(Layer &&target) { *this = target; }
-
-        Layer &operator=(const Layer &target) {
-            size = target.size;
-            nextLayerSize = target.nextLayerSize;
+        Layer &operator = (const Layer &target) {
             activations = target.activations;
             bias = target.bias;
             weights = target.weights;
 
             return *this;
         }
-
-        Layer &operator=(Layer &&target) {
-            size = std::move(target.size);
-            nextLayerSize = std::move(target.nextLayerSize);
-            activations = std::move(target.activations);
-            bias = std::move(target.bias);
-            weights = std::move(target.weights);
-
-            return *this;
-        }
-
-        Matrix &GetActivations() { return activations; }
-
-        Matrix &GetBias() { return bias; }
-
-        Matrix &GetWeights() { return weights; }
-
-        Matrix &&ComputeNextLayer(Layer<sigmoid> next) {
-            Matrix retval;
-
-            retval = (next.weights * activations + next.bias).ApplyFunction<NormalizationFunction>();
-
-            return std::move(retval);
-        }
-
-        void SetWeights(Matrix &&target) {
-            weights = std::move(target);
-        }
-
-        void SetBias(Matrix &&target) { bias = std::move(target); }
-
-        void SetActivations(Matrix &&target) {
-            activations = std::move(target);
-        }
-
-        ~Layer() {}
-
-       protected:
-        size_t size;
-        Matrix activations;
-
-       private:
-        size_t nextLayerSize;
-        Matrix weights;
-        Matrix bias;
-    };
-
-    template <class sigmoid, class biasType = long double>
-    class InputLayer : Layer<sigmoid, biasType> {
-        using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
-        friend class Backpropagate;
-
-       protected:
-        size_t nextLayerSize;
-    };
-
-    template <class sigmoid, class biasType = long double>
-    class HiddenLayer : Layer<sigmoid, biasType> {
-        using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
-        friend class Backpropagate;
-
-       protected:
-        size_t nextLayerSize;
-        Matrix weights;
-        Matrix bias;
-    };
-
-    template <class sigmoid, class biasType = long double>
-    class OutputLayer : Layer<sigmoid, biasType> {
-        using Layer<sigmoid, biasType>::Layer;
-        friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
-        friend class Backpropagate;
-
-       protected:
-        Matrix weights;
-        Matrix bias;
     };
 
     void forwardPropagate(const std::vector<T> &input) {
-        for (int i = 0; i < inputNeuronCount; ++i)
-            inputLayer.activations.data(i, 1) = sigmoidFunction(input[i]);
+        auto sigma = [=](Matrix<long double> &target) {
+            target.applyFunction<Sigmoid>();
+            return target;
+        };
 
-        if (hiddenLayersCount) {
-            hiddenLayers[0].activations =
-                std::move(inputLayer.ComputeNextLayer(hiddenLayers[0]));
+        for (auto it = input.begin(); it != input.end(); ++it)
+            neuralLayers.front().activations.data(it - input.begin(), 1) = *it;
 
-            for (int i = 1; i < hiddenLayersCount - 1; ++i)
-                hiddenLayers[i].activations = std::move(
-                    hiddenLayers[i - 1].ComputeNextLayer(hiddenLayers[i]));
+        neuralLayers.front().activations =
+                     sigma(neuralLayers.front().activations);
 
-            outputLayer.activations =
-                std::move(hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer(
-                    outputLayer));
-        } else {
-            outputLayer.activations =
-                std::move(inputLayer.ComputeNextLayer(outputLayer));
-        }
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
+            it -> activations = sigma(it -> weights * (it - 1) -> activations +
+                                      it -> bias);
     }
 
     void setRandomStartingPoint() {
@@ -234,20 +139,13 @@ class NeuralNetwork {
                     target.data(i, j) = randomizer.getNumber();
         };
 
-        randomizeMatrix(outputLayer.weights);
-        randomizeMatrix(outputLayer.bias);
-
-        for (int i = 0; i < hiddenLayersCount; ++i)
-            randomizeMatrix(hiddenLayers[i].weights),
-                randomizeMatrix(hiddenLayers[i].bias);
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
+            randomizeMatrix(it -> weights),
+            randomizeMatrix(it -> bias);
     }
 
-    int inputNeuronCount, outputNeuronCount, hiddenLayersCount;
-    InputLayer<NormalizationFunction> inputLayer;
-    OutputLayer<NormalizationFunction> outputLayer;
-    std::vector<int> hiddenLayersSizes;
-    std::vector<HiddenLayer<NormalizationFunction>> hiddenLayers;
-    NormalizationFunction sigmoidFunction;
+    int inputNeuronCount, outputNeuronCount;
     double learningRate;
-    std::vector<double> fitnessRecord;
+    std::vector<Layer> neuralLayers;
+    size_t neuralNetworkSize;
 };

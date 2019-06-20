@@ -10,8 +10,8 @@ DIR = ./src/
 build:clean
 	$(GXX) $(GFLAGS) $(DIR)main.cpp $(H_DIR)$(HEADERS) -o $(TARGET)
 	
-debug:clean
-	$(GXX) $(GFLAGS) $(DIR)main.cpp $(H_DIR)$(HEADERS) -o -g $(TARGET)
+debug:
+	$(GXX) $(GFLAGS) -g $(DIR)main.cpp $(H_DIR)$(HEADERS) -o $(TARGET)
 	
 clean:
 	rm -rvf $(TARGET); clear
