@@ -66,7 +66,8 @@ class NeuralNetwork {
         biases.push_back(outputLayer.GetActivations());
         activations.push_back(outputLayer.GetActivations());
 
-        backpropagator.Backpropagate(weights, biases, activations, desiredOutput, learningRate);
+        auto backpropagator = Backpropagator();
+        backpropagator.backpropagate(weights, biases, activations, desiredOutput, learningRate);
     };
 
     int Classify(const std::vector<T> &input) {
