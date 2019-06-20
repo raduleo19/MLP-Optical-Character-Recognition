@@ -11,8 +11,8 @@
 #include <random>
 #include <chrono>
 
-std::vector<int> GetRow(std::ifstream &inputFile);
-std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilename);
+std::vector<long double> GetRow(std::ifstream &inputFile);
+std::vector<std::pair<int, std::vector<long double>>> GetDataset(std::string inputFilename);
 
 class randomEngine {
 public:

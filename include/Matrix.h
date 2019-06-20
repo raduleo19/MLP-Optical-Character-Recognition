@@ -26,7 +26,7 @@ class Matrix {
         this->container = other.container;
     }
 
-    ~Matrix();
+    ~Matrix() {}
 
     // Matrix Operations
     Matrix &operator=(const Matrix &other) {

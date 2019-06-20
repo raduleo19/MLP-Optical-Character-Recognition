@@ -1,7 +1,7 @@
 #include "Utils.h"
 
-std::vector<int> GetRow(std::ifstream &inputFile) {
-    std::vector<int> buffer;
+std::vector<long double> GetRow(std::ifstream &inputFile) {
+    std::vector<long double> buffer;
 
     std::string line;
     std::getline(inputFile, line);
@@ -9,14 +9,14 @@ std::vector<int> GetRow(std::ifstream &inputFile) {
 
     std::string numString;
     while (std::getline(inputStream, numString, ',')) {
-        buffer.push_back(atoi(numString.c_str()));
+        buffer.push_back(1.0 * atoi(numString.c_str()));
     }
 
     return buffer;
 }
 
-std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilename) {
-    std::vector<std::pair<int, std::vector<int>>> trainDataset;
+std::vector<std::pair<int, std::vector<long double>>> GetDataset(std::string inputFilename) {
+    std::vector<std::pair<int, std::vector<long double>>> trainDataset;
     std::ifstream trainingFile(inputFilename);
 
     while (true) {
@@ -25,7 +25,7 @@ std::vector<std::pair<int, std::vector<int>>> GetDataset(std::string inputFilena
             break;
         }
         int correctValue = row[0];
-        trainDataset.push_back({correctValue, std::vector<int>(row.begin() + 1, row.end())});
+        trainDataset.push_back({correctValue, std::vector<long double>(row.begin() + 1, row.end())});
     }
     return trainDataset;
 }
