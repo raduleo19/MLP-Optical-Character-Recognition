@@ -93,10 +93,10 @@ class NeuralNetwork {
         }
 
         /// Check computeNextLayer for formula. inputLayer doesn't have weights or biases
-        backpropagator.backpropagate(
-            hiddenLayers[0].weights, hiddenLayers[0].bias,
-            hiddenLayers[0].activations, fitnessRecord, inputLayer.weights,
-            inputLayer.bias, inputLayer.activations);
+//         backpropagator.backpropagate(
+//             hiddenLayers[0].weights, hiddenLayers[0].bias,
+//             hiddenLayers[0].activations, fitnessRecord, inputLayer.weights,
+//             inputLayer.bias, inputLayer.activations);
     };
 
     int Classify(const std::vector<T> &input) {
