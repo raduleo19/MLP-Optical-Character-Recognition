@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "../include/Matrix.h"
 #include "../include/NeuralNetwork.h"
 #include "../include/Utils.h"
 #include "../include/ActivationFunction.h"

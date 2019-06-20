@@ -3,14 +3,13 @@
 #pragma once
 
 #include <vector>
-#include "../include/Utils.h"
 #include "../include/ActivationFunction.h"
-#include "../include/Matrix.h"
 #include "../include/Diagnostics.h"
+#include "../include/Matrix.h"
+#include "../include/Utils.h"
 
 template <class T, class NormalizationFunction, class TakeStep>
 class NeuralNetwork {
-
 #ifdef NNDIAG
     friend class NeuralDiagnostics;
 #endif  // NNDIAG
@@ -25,19 +24,19 @@ class NeuralNetwork {
         outputNeuronCount = _outputNeuronCount;
         learningRate = _learningRate;
 
-        inputLayer = std::move(InputLayer<NormalizationFunction>
-                              (inputNeuronCount, hiddenLayersCount ?
-                               hiddenLayersSizes[0] : outputNeuronCount));
+        inputLayer = std::move(InputLayer<NormalizationFunction>(
+            inputNeuronCount,
+            hiddenLayersCount ? hiddenLayersSizes[0] : outputNeuronCount));
 
-        outputLayer = std::move(OutputLayer<NormalizationFunction>
-                               (outputNeuronCount));
+        outputLayer =
+            std::move(OutputLayer<NormalizationFunction>(outputNeuronCount));
 
         for (int i = 0; i < hiddenLayersCount - 1; ++i)
             hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
                 hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
 
         hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-                hiddenLayersSizes[hiddenLayersCount - 1], outputNeuronCount)));
+            hiddenLayersSizes[hiddenLayersCount - 1], outputNeuronCount)));
 
         setRandomStartingPoint();
     };
@@ -53,30 +52,49 @@ class NeuralNetwork {
             long double delta = 0;
 
             for (int i = 0; i < outputNeuronCount; ++i) {
-                long double epsilon = outputLayer.activations.data(i, 1) - desiredOutput.data(i, 1);
+                long double epsilon = outputLayer.activations.data(i, 1) -
+                                      desiredOutput.data(i, 1);
                 delta += epsilon * epsilon;
             }
 
-            return delta;
+            return delta / 2;
         };
 
         forwardPropagate(input);
 
         fitnessRecord.push_back(fitnessFunction());
-        
-        /// TODO interface with TakeStep class (backpropagation)
+        auto backpropagator = TakeStep();
+
+        // TODO: Solve Errors
+        backpropagator.backpropagate(
+            outputLayer.weights, outputLayer.bias, outputLayer.activations,
+            fitnessRecord, hiddenLayers[hiddenLayersCount - 1].weights,
+            hiddenLayers[hiddenLayersCount - 1].bias,
+            hiddenLayers[hiddenLayersCount - 1].activations);
+
+        for (size_t i = hiddenLayersCount - 1; i >= 1; i++) {
+            backpropagator.backpropagate(
+                hiddenLayers[i].weights, hiddenLayers[i].bias,
+                hiddenLayers[i].activations, fitnessRecord,
+                hiddenLayers[i - 1].weights, hiddenLayers[i - 1].bias,
+                hiddenLayers[i - 1].activations);
+        }
+
+        backpropagator.backpropagate(
+            hiddenLayers[0].weights, hiddenLayers[0].bias,
+            hiddenLayers[0].activations, fitnessRecord, inputLayer.weights,
+            inputLayer.bias, inputLayer.activations);
     };
 
     int Classify(const std::vector<T> &input) {
         forwardPropagate(input);
-        
+
         long double max = -1.0;
         int retval = -1;
 
         for (int i = 0; i < outputNeuronCount; ++i)
             if (outputLayer.activations.data(i, 1) > max)
-                max = outputLayer.activations.data(i, 1),
-                retval = i;
+                max = outputLayer.activations.data(i, 1), retval = i;
 
         return retval;
     };
@@ -131,7 +149,7 @@ class NeuralNetwork {
             Matrix<long double> retval;
             auto sigma = [&, retval](Matrix<long double> &target) {
                 target.applyFunction<sigmoid>();
-                
+
                 return target;
             };
 
@@ -144,9 +162,7 @@ class NeuralNetwork {
             weights = std::move(target);
         }
 
-        void SetBias(Matrix<biasType> &&target) {
-            bias = std::move(target);
-        }
+        void SetBias(Matrix<biasType> &&target) { bias = std::move(target); }
 
         void SetActivations(Matrix<long double> &&target) {
             activations = std::move(target);
@@ -161,6 +177,7 @@ class NeuralNetwork {
        private:
         size_t nextLayerSize;
         Matrix<long double> weights;
+        // TODO: Make bias accesible from Backpropagation
         Matrix<biasType> bias;
     };
 
@@ -193,12 +210,15 @@ class NeuralNetwork {
             inputLayer.activations.data(i, 1) = sigmoidFunction(input[i]);
 
         if (hiddenLayersCount) {
-            hiddenLayers[0].activations = std::move(inputLayer.ComputeNextLayer());
-            
+            hiddenLayers[0].activations =
+                std::move(inputLayer.ComputeNextLayer());
+
             for (int i = 1; i < hiddenLayersCount - 1; ++i)
-                hiddenLayers[i].activations = std::move(hiddenLayers[i - 1].ComputeNextLayer());
-            
-            outputLayer.activations = std::move(hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer());
+                hiddenLayers[i].activations =
+                    std::move(hiddenLayers[i - 1].ComputeNextLayer());
+
+            outputLayer.activations = std::move(
+                hiddenLayers[hiddenLayersCount - 1].ComputeNextLayer());
         } else {
             outputLayer.activations = std::move(inputLayer.ComputeNextLayer());
         }
@@ -206,7 +226,7 @@ class NeuralNetwork {
 
     void setRandomStartingPoint() {
         randomEngine randomizer;
-        
+
         auto randomizeMatrix = [&randomizer](Matrix<long double> &target) {
             std::pair<int, int> size;
             size = target.size();
@@ -217,10 +237,10 @@ class NeuralNetwork {
 
         randomizeMatrix(inputLayer.weights);
         randomizeMatrix(inputLayer.bias);
-        
+
         for (int i = 0; i < hiddenLayersCount; ++i)
             randomizeMatrix(hiddenLayers[i].weights),
-            randomizeMatrix(hiddenLayers[i].bias);
+                randomizeMatrix(hiddenLayers[i].bias);
     }
 
     int inputNeuronCount, outputNeuronCount, hiddenLayersCount;

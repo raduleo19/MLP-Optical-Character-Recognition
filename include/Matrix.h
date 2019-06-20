@@ -78,6 +78,24 @@ class Matrix {
 
     void operator*=(const Matrix &target) { return (*this) * target; }
 
+    Matrix &operator*(const T &target) {
+        Matrix<T> *newMatrix = new Matrix<T>(numRows, target.numColumns);
+        for (size_t i = 0; i < numRows; i++) {
+            for (size_t j = 0; j < target.numColumns; j++) {
+                newMatrix->container[i][j] = container[i][j] * target;
+            }
+        }
+        return *newMatrix;
+    }
+
+    void operator*=(const T &target) { return (*this) * target; }
+
+    Matrix &operator-(const Matrix &target) {
+        return *this + target * (-1);
+    }
+
+    void operator-=(const Matrix &target) { *this = (*this) - target; }
+
     Matrix &Transpose() const {
         Matrix<T> *newMatrix = new Matrix<T>(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
