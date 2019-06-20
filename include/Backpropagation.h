@@ -1,3 +1,4 @@
+// Copyright 2019 Rica Radu Leonard
 // Copyright 2019 Ciobanu Bogdan-Calin
 #pragma once
 
