@@ -39,49 +39,35 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
-        forwardPropagate(input);/*
         Matrix<long double> desiredOutput(outputNeuronCount, 1);
-
+        std::vector<Matrix<long double>> weights;
+        std::vector<Matrix<long double>> biases;
+        std::vector<Matrix<long double>> activations;
+        
+        forwardPropagate(input);
+        
         for (int i = 0; i < outputNeuronCount; ++i)
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
 
-        std::vector<Matrix<long double>> weights;
-        std::vector<Matrix<long double>> biases;
-        std::vector<Matrix<long double>> activations;
-
-        weights.push_back(inputLayer.GetWeights());
-        biases.push_back(inputLayer.GetActivations());
-        activations.push_back(inputLayer.GetActivations());
-        for (auto it : hiddenLayers) {
-            weights.push_back(it.GetWeights());
-            biases.push_back(it.GetActivations());
-            activations.push_back(it.GetActivations());
-        }
-        weights.push_back(outputLayer.GetWeights());
-        biases.push_back(outputLayer.GetActivations());
-        activations.push_back(outputLayer.GetActivations());
-
+        for (auto i : neuralLayers)
+            weights.push_back(i.weights),
+            biases.push_back(i.bias),
+            activations.push_back(i.activations);
+        
         auto backpropagator = Backpropagator();
         backpropagator.backpropagate(weights, biases, activations,
                                      desiredOutput, learningRate);
-
-        inputLayer.SetWeights(std::move(weights[0]));
-        inputLayer.SetBias(std::move(biases[0]));
-        for (unsigned i = 1; i < weights.size() - 1; ++i) {
-            hiddenLayers[i - 1].SetWeights(std::move(weights[i]));
-            hiddenLayers[i - 1].SetBias(std::move(biases[i]));
-        }
-        outputLayer.SetWeights(std::move(weights[weights.size() - 1]));
-        outputLayer.SetBias(std::move(biases[weights.size() - 1]));*/
+        
+        for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
+            it -> weights = weights[it - neuralLayers.begin()],
+            it -> bias = biases[it - neuralLayers.begin()];
     };
 
     int Classify(const std::vector<T> &input) {
         Layer outputLayer = neuralLayers.back();
         long double max = -1.0;
         int retval = -1;
-
-        std::cout << input.size() << std::endl;
 
         forwardPropagate(input);
 
@@ -128,15 +114,7 @@ class NeuralNetwork {
 
         neuralLayers.front().activations = sigma(neuralLayers.front().activations);
 
-
-        //std::pair<int, int> test;
-        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it) {/*
-            test = (it -> weights).size();
-            std::cout << test.first << " " << test.second << std::endl;
-            test = ((it - 1) -> activations).size();
-            std::cout << test.first << " " << test.second << std::endl;
-            test = ((it -> weights) * ((it - 1) -> activations)).size();
-            std::cout << test.first << " " << test.second << std::endl << std::endl;*/
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it) {
             it -> activations = sigma(it -> weights * (it - 1) -> activations + it -> bias);
         }
     }
