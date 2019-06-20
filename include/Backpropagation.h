@@ -12,10 +12,9 @@ class Backpropagate {
     void backpropagate(std::vector<Matrix<long double>> &weights,
                        std::vector<Matrix<long double>> &biases,
                        std::vector<Matrix<long double>> &activations,
+                       const size_t &layersCount,
                        Matrix<long double> desiredOutput,
                        long double learningRate) {
-        size_t layersCount = weights.size();
-
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
         std::vector<Matrix<long double>> dCdB(layersCount - 1);
         dCdB[layersCount - 2] =

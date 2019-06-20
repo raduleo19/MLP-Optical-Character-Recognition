@@ -46,9 +46,9 @@ class NeuralNetwork {
         std::vector<Matrix<long double>> weights;
         std::vector<Matrix<long double>> biases;
         std::vector<Matrix<long double>> activations;
-        
+
         forwardPropagate(input);
-        
+
         for (int i = 0; i < outputNeuronCount; ++i)
             desiredOutput.data(i, 1) = 0.0;
         desiredOutput.data(correctValue, 1) = 1.0;
@@ -57,11 +57,11 @@ class NeuralNetwork {
             weights.push_back(i.weights),
             biases.push_back(i.bias),
             activations.push_back(i.activations);
-        
+
         auto backpropagator = Backpropagator();
         backpropagator.backpropagate(weights, biases, activations,
-                                     desiredOutput, learningRate);
-        
+                                     neuralNetworkSize, desiredOutput, learningRate);
+
         for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
             it -> weights = weights[it - neuralLayers.begin()],
             it -> bias = biases[it - neuralLayers.begin()];
@@ -102,7 +102,7 @@ class NeuralNetwork {
             activations = target.activations;
             bias = target.bias;
             weights = target.weights;
-            
+
             return *this;
         }
     };
@@ -138,7 +138,7 @@ class NeuralNetwork {
             randomizeMatrix(it -> weights),
             randomizeMatrix(it -> bias);
     }
-    
+
     int inputNeuronCount, outputNeuronCount;
     double learningRate;
     std::vector<Layer> neuralLayers;
