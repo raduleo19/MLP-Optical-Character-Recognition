@@ -13,10 +13,11 @@ class Backpropagate {
                        std::vector<Matrix<long double>> &biases,
                        std::vector<Matrix<long double>> &activations,
                        const size_t &layersCount,
-                       Matrix<long double> desiredOutput,
-                       long double learningRate) {
+                       const Matrix<long double> &desiredOutput,
+                       const long double &learningRate) {
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
         std::vector<Matrix<long double>> dCdB(layersCount - 1);
+
         dCdB[layersCount - 2] =
             (activations[layersCount - 1] - desiredOutput)
                 .HadamardMultiply(activations[layersCount - 2] *

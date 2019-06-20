@@ -30,10 +30,13 @@ class NeuralNetwork {
 
         neuralLayers.push_back(Layer(inputNeuronCount));
         if (hiddenLayersCount) {
-            neuralLayers.push_back(Layer(inputNeuronCount, hiddenLayersSizes[0]));
+            neuralLayers.push_back(Layer(inputNeuronCount,
+                                         hiddenLayersSizes[0]));
             for (int i = 1; i < hiddenLayersCount; ++i)
-                neuralLayers.push_back(Layer(hiddenLayersSizes[i - 1], hiddenLayersSizes[i]));
-            neuralLayers.push_back(Layer(hiddenLayersSizes.back(), outputNeuronCount));
+                neuralLayers.push_back(Layer(hiddenLayersSizes[i - 1],
+                                       hiddenLayersSizes[i]));
+            neuralLayers.push_back(Layer(hiddenLayersSizes.back(),
+                                         outputNeuronCount));
         } else {
             neuralLayers.push_back(Layer(inputNeuronCount, outputNeuronCount));
         }
@@ -60,7 +63,8 @@ class NeuralNetwork {
 
         auto backpropagator = Backpropagator();
         backpropagator.backpropagate(weights, biases, activations,
-                                     neuralNetworkSize, desiredOutput, learningRate);
+                                     neuralNetworkSize, desiredOutput,
+                                     learningRate);
 
         for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
             it -> weights = weights[it - neuralLayers.begin()],
@@ -116,11 +120,12 @@ class NeuralNetwork {
         for (auto it = input.begin(); it != input.end(); ++it)
             neuralLayers.front().activations.data(it - input.begin(), 1) = *it;
 
-        neuralLayers.front().activations = sigma(neuralLayers.front().activations);
+        neuralLayers.front().activations =
+                     sigma(neuralLayers.front().activations);
 
-        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it) {
-            it -> activations = sigma(it -> weights * (it - 1) -> activations + it -> bias);
-        }
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
+            it -> activations = sigma(it -> weights * (it - 1) -> activations +
+                                      it -> bias);
     }
 
     void setRandomStartingPoint() {
