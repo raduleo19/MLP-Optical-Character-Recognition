@@ -23,8 +23,8 @@ class Matrix {
         container = std::move(target);
     }
 
-    Matrix(int numRows, int numColumns)
-        : numRows(numRows), numColumns(numColumns) {
+    Matrix(int _numRows, int _numColumns)
+        : numRows(_numRows), numColumns(_numColumns) {
         container =
             std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns));
     }
@@ -61,8 +61,8 @@ class Matrix {
 
     void operator+=(const Matrix &target) { *this = (*this) + target; }
 
-    Matrix &operator*(const Matrix &target) {
-        static Matrix<T> newMatrix(numRows, numColumns);
+    Matrix operator*(const Matrix &target) {
+        Matrix<T> newMatrix(numRows, target.numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < target.numColumns; j++) {
                 T sum = 0;

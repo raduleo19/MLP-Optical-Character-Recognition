@@ -32,7 +32,7 @@ class Backpropagate {
                           .HadamardMultiply(temp);
         }
 
-        for (int i = 0; i < layersCount - 1; i++) {
+        for (unsigned i = 0; i < layersCount - 1; i++) {
             dCdW[i] = activations[i].Transpose() * dCdB[i];
             weights[i] = weights[i] - (dCdW[i] * learningRate);
             biases[i] = biases[i] - (dCdB[i] * learningRate);
