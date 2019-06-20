@@ -89,8 +89,14 @@ class Matrix {
 
     void operator*=(const T &target) { return (*this) * target; }
 
-    Matrix &operator-(const Matrix &target) {
-        return *this + target * (-1);
+    Matrix &operator-(auto target) {
+        static Matrix<T> newMatrix(numRows, numColumns);
+        for (size_t i = 0; i < numRows; i++) {
+            for (size_t j = 0; j < numColumns; j++) {
+                newMatrix.data(i, j) = data(i, j) - target.data(i, j);
+            }
+        }
+        return newMatrix;
     }
 
     void operator-=(const Matrix &target) { *this = (*this) - target; }
