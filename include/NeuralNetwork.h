@@ -70,14 +70,14 @@ class NeuralNetwork {
         backpropagator.backpropagate(weights, biases, activations,
                                      desiredOutput, learningRate);
 
-        inputLayer.SetWeights(weights[0]);
-        inputLayer.SetBias(biases[0]);
-        for (int i = 1; i < weights.size() - 1; ++i) {
-            hiddenLayers[i - 1].SetWeights(weights[i]);
-            hiddenLayers[i - 1].SetBias(biases[i]);
+        inputLayer.SetWeights(std::move(weights[0]));
+        inputLayer.SetBias(std::move(biases[0]));
+        for (unsigned i = 1; i < weights.size() - 1; ++i) {
+            hiddenLayers[i - 1].SetWeights(std::move(weights[i]));
+            hiddenLayers[i - 1].SetBias(std::move(biases[i]));
         }
-        outputLayer.SetWeights(weights[weights.size() - 1]);
-        outputLayer.SetBias(biases[weights.size() - 1]);
+        outputLayer.SetWeights(std::move(weights[weights.size() - 1]));
+        outputLayer.SetBias(std::move(biases[weights.size() - 1]));
     };
 
     int Classify(const std::vector<T> &input) {
@@ -94,7 +94,7 @@ class NeuralNetwork {
     };
 
    protected:
-    template <class sigmoid, class biasType = int>
+    template <class sigmoid, class biasType = long double>
     class Layer {
        public:
         Layer() {}
@@ -174,7 +174,7 @@ class NeuralNetwork {
         Matrix<biasType> bias;
     };
 
-    template <class sigmoid, class biasType = int>
+    template <class sigmoid, class biasType = long double>
     class InputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
         friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
@@ -184,7 +184,7 @@ class NeuralNetwork {
         size_t nextLayerSize;
     };
 
-    template <class sigmoid, class biasType = int>
+    template <class sigmoid, class biasType = long double>
     class HiddenLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
         friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
@@ -196,7 +196,7 @@ class NeuralNetwork {
         Matrix<biasType> bias;
     };
 
-    template <class sigmoid, class biasType = int>
+    template <class sigmoid, class biasType = long double>
     class OutputLayer : Layer<sigmoid, biasType> {
         using Layer<sigmoid, biasType>::Layer;
         friend class NeuralNetwork<T, NormalizationFunction, Backpropagator>;
