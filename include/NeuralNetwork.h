@@ -20,9 +20,10 @@ class NeuralNetwork {
                   double _learningRate) {
         int hiddenLayersCount;
         std::vector<int> hiddenLayersSizes;
+
         inputNeuronCount = _inputNeuronCount;
         hiddenLayersCount = _hiddenLayersCount;
-        hiddenLayersSizes = std::move(_hiddenLayersSizes);
+        hiddenLayersSizes = _hiddenLayersSizes;
         outputNeuronCount = _outputNeuronCount;
         learningRate = _learningRate;
         neuralNetworkSize = 2 + hiddenLayersCount;
@@ -67,15 +68,14 @@ class NeuralNetwork {
     };
 
     int Classify(const std::vector<T> &input) {
-        Layer outputLayer = neuralLayers.back();
         long double max = -1.0;
         int retval = -1;
 
         forwardPropagate(input);
 
         for (int i = 0; i < outputNeuronCount; ++i)
-            if (outputLayer.activations.data(i, 1) > max)
-                max = outputLayer.activations.data(i, 1), retval = i;
+            if (neuralLayers.back().activations.data(i, 1) > max)
+                max = neuralLayers.back().activations.data(i, 1), retval = i;
 
         return retval;
     };
@@ -110,12 +110,11 @@ class NeuralNetwork {
     void forwardPropagate(const std::vector<T> &input) {
         auto sigma = [=](Matrix<long double> &target) {
             target.applyFunction<Sigmoid>();
-
             return target;
         };
 
-        for (int i = 0; i < inputNeuronCount; ++i)
-            neuralLayers.front().activations.data(i, 1) = input[i];
+        for (auto it = input.begin(); it != input.end(); ++it)
+            neuralLayers.front().activations.data(it - input.begin(), 1) = *it;
 
         neuralLayers.front().activations = sigma(neuralLayers.front().activations);
 

@@ -7,8 +7,8 @@
 #include "../include/Backpropagation.h"
 
 int main() {
-    NeuralNetwork<int, ActivationFunction, Backpropagate> myNeuralNetwork =
-        NeuralNetwork<int, ActivationFunction, Backpropagate>(28 * 28, 2, std::vector<int> {28, 28}, 10, 0.1);
+    NeuralNetwork<int, ActivationFunction, Backpropagate<DerivativeActivationFunction>> myNeuralNetwork =
+        NeuralNetwork<int, ActivationFunction, Backpropagate<DerivativeActivationFunction>>(28 * 28, 2, std::vector<int> {28, 28}, 10, 0.1);
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
     for (auto input : trainDataset) {

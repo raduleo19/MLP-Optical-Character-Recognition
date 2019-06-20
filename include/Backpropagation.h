@@ -3,9 +3,10 @@
 #pragma once
 
 #include <vector>
-#include "../include/ActivationFunction.h"
+#include "../include/Matrix.h"
 
 // Gradient Descent Backpropagate
+template <class Derivative>
 class Backpropagate {
    public:
     void backpropagate(std::vector<Matrix<long double>> &weights,
@@ -13,7 +14,6 @@ class Backpropagate {
                        std::vector<Matrix<long double>> &activations,
                        Matrix<long double> desiredOutput,
                        long double learningRate) {
-
         size_t layersCount = weights.size();
 
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
@@ -23,11 +23,11 @@ class Backpropagate {
                 .HadamardMultiply(activations[layersCount - 2] *
                                       weights[layersCount - 2] +
                                   biases[layersCount - 2]);
-        dCdB[layersCount - 2].applyFunction<DerivativeActivationFunction>();
+        dCdB[layersCount - 2].applyFunction<Derivative>();
 
         for (int i = layersCount - 3; i >= 0; i--) {
             auto temp = activations[i] * weights[i] + biases[i];
-            temp.applyFunction<DerivativeActivationFunction>();
+            temp.applyFunction<Derivative>();
             dCdB[i] = (dCdB[i + 1] * weights[i + 1].Transpose())
                           .HadamardMultiply(temp);
         }
