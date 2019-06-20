@@ -24,19 +24,19 @@ class NeuralNetwork {
         outputNeuronCount = _outputNeuronCount;
         learningRate = _learningRate;
 
-        inputLayer = std::move(InputLayer<NormalizationFunction>(
-            inputNeuronCount,
-            hiddenLayersCount ? hiddenLayersSizes[0] : outputNeuronCount));
+        inputLayer =
+            std::move(InputLayer<NormalizationFunction>(inputNeuronCount));
 
-        outputLayer =
-            std::move(OutputLayer<NormalizationFunction>(outputNeuronCount));
-
-        for (int i = 0; i < hiddenLayersCount - 1; ++i)
-            hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-                hiddenLayersSizes[i], hiddenLayersSizes[1 + i])));
+        outputLayer = std::move(OutputLayer<NormalizationFunction>(
+            hiddenLayersCount ? hiddenLayersSizes[hiddenLayersCount - 1] : inputNeuronCount,
+            outputNeuronCount));
 
         hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
-            hiddenLayersSizes[hiddenLayersCount - 1], outputNeuronCount)));
+            inputNeuronCount, hiddenLayersSizes[0])));
+
+        for (int i = 1; i < hiddenLayersCount; ++i)
+            hiddenLayers.push_back(std::move(HiddenLayer<NormalizationFunction>(
+                hiddenLayersSizes[i - 1], hiddenLayersSizes[i])));
 
         setRandomStartingPoint();
     };
@@ -71,7 +71,7 @@ class NeuralNetwork {
 
             return deltas;
         };
-        
+
         forwardPropagate(input);
 
         fitnessLog.push_back(fitnessFunctionLog());
@@ -122,10 +122,10 @@ class NeuralNetwork {
             activations = Matrix<long double>(_size, 1);
         }
 
-        Layer(const size_t &_size, const size_t &_nextLayerSize) {
+        Layer(const size_t &_previousLayerSize, const size_t &_size) {
             activations = Matrix<long double>(_size, 1);
             bias = Matrix<biasType>(_size, 1);
-            weights = Matrix<long double>(_nextLayerSize, _size);
+            weights = Matrix<long double>(_size, _previousLayerSize);
         }
 
         Layer(const Layer &target) { *this = target; }
