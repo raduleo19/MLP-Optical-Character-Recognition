@@ -2,5 +2,5 @@
 
 TODO:
 - Solve Backpropagation Algebraic System
-- Solve bugs caused by biasType (we need bias in backpropagation, whytf we have biasType -> maybe remove it)
+- @Rica, revise backprop system, inputLayer doesn't have weights or biases
 - Diagnostics
