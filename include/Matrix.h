@@ -80,7 +80,7 @@ class Matrix {
     Matrix &operator*(const T &target) {
         static Matrix<T> newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
-            for (size_t j = 0; j < target.numColumns; j++) {
+            for (size_t j = 0; j < numColumns; j++) {
                 newMatrix.container[i][j] = container[i][j] * target;
             }
         }
