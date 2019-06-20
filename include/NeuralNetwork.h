@@ -30,13 +30,13 @@ class NeuralNetwork {
 
         neuralLayers.push_back(Layer(inputNeuronCount));
         if (hiddenLayersCount) {
-            neuralLayers.push_back(Layer(inputNeuronCount,
-                                         hiddenLayersSizes[0]));
+            neuralLayers.push_back(
+                Layer(inputNeuronCount, hiddenLayersSizes[0]));
             for (int i = 1; i < hiddenLayersCount; ++i)
-                neuralLayers.push_back(Layer(hiddenLayersSizes[i - 1],
-                                       hiddenLayersSizes[i]));
-            neuralLayers.push_back(Layer(hiddenLayersSizes.back(),
-                                         outputNeuronCount));
+                neuralLayers.push_back(
+                    Layer(hiddenLayersSizes[i - 1], hiddenLayersSizes[i]));
+            neuralLayers.push_back(
+                Layer(hiddenLayersSizes.back(), outputNeuronCount));
         } else {
             neuralLayers.push_back(Layer(inputNeuronCount, outputNeuronCount));
         }
@@ -45,10 +45,10 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<int> &input, int correctValue) {
-        Matrix<long double> desiredOutput(outputNeuronCount, 1);
-        std::vector<Matrix<long double>> weights;
-        std::vector<Matrix<long double>> biases;
-        std::vector<Matrix<long double>> activations;
+        Matrix desiredOutput(outputNeuronCount, 1);
+        std::vector<Matrix> weights;
+        std::vector<Matrix> biases;
+        std::vector<Matrix> activations;
 
         forwardPropagate(input);
 
@@ -57,9 +57,8 @@ class NeuralNetwork {
         desiredOutput.data(correctValue, 1) = 1.0;
 
         for (auto i : neuralLayers)
-            weights.push_back(i.weights),
-            biases.push_back(i.bias),
-            activations.push_back(i.activations);
+            weights.push_back(i.weights), biases.push_back(i.bias),
+                activations.push_back(i.activations);
 
         auto backpropagator = Backpropagator();
         backpropagator.backpropagate(weights, biases, activations,
@@ -67,8 +66,8 @@ class NeuralNetwork {
                                      learningRate);
 
         for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
-            it -> weights = weights[it - neuralLayers.begin()],
-            it -> bias = biases[it - neuralLayers.begin()];
+            it->weights = weights[it - neuralLayers.begin()],
+            it->bias = biases[it - neuralLayers.begin()];
     };
 
     int Classify(const std::vector<T> &input) {
@@ -87,22 +86,21 @@ class NeuralNetwork {
    protected:
     class Layer {
         friend class NeuralNetwork<T, Sigmoid, Backpropagator>;
-    protected:
-        Matrix<long double> activations, bias, weights;
+
+       protected:
+        Matrix activations, bias, weights;
 
         Layer() {}
 
-        Layer(const size_t &size) {
-            activations = Matrix<long double>(size, 1);
-        }
+        Layer(const size_t &size) { activations = Matrix(size, 1); }
 
         Layer(const size_t &previousLayerSize, const size_t &size) {
-            activations = Matrix<long double>(size, 1);
-            bias = Matrix<long double>(size, 1);
-            weights = Matrix<long double>(size, previousLayerSize);
+            activations = Matrix(size, 1);
+            bias = Matrix(size, 1);
+            weights = Matrix(size, previousLayerSize);
         }
 
-        Layer &operator = (const Layer &target) {
+        Layer &operator=(const Layer &target) {
             activations = target.activations;
             bias = target.bias;
             weights = target.weights;
@@ -112,36 +110,36 @@ class NeuralNetwork {
     };
 
     void forwardPropagate(const std::vector<T> &input) {
-        auto sigma = [=](Matrix<long double> &target) {
-            target.applyFunction<Sigmoid>();
-            return target;
+        auto sigma = [=](Matrix &target) {
+            return target.ApplyFunction<Sigmoid>();
         };
 
         for (auto it = input.begin(); it != input.end(); ++it)
             neuralLayers.front().activations.data(it - input.begin(), 1) = *it;
 
         neuralLayers.front().activations =
-                     sigma(neuralLayers.front().activations);
+            sigma(neuralLayers.front().activations);
 
         for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
-            it -> activations = sigma(it -> weights * (it - 1) -> activations +
-                                      it -> bias);
+            it->activations =
+                sigma(it->weights * (it - 1)->activations + it->bias);
     }
 
     void setRandomStartingPoint() {
         randomEngine randomizer;
 
-        auto randomizeMatrix = [&randomizer](Matrix<auto> &target) {
-            std::pair<int, int> size;
-            size = target.size();
-            for (int i = 0; i < size.first; ++i)
-                for (int j = 0; j < size.second; ++j)
-                    target.data(i, j) = randomizer.getNumber();
+        auto randomizeMatrix = [&randomizer](Matrix &target) {
+            auto container = target.GetContainer();
+            for (auto &row : container) {
+                for (auto &column : row) {
+                    column = randomizer.getNumber();
+                }
+            }
+            return Matrix(container);
         };
 
         for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
-            randomizeMatrix(it -> weights),
-            randomizeMatrix(it -> bias);
+            randomizeMatrix(it->weights), randomizeMatrix(it->bias);
     }
 
     int inputNeuronCount, outputNeuronCount;

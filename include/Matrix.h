@@ -136,6 +136,12 @@ class Matrix {
         return *this;
     }
 
+    auto GetContainer() const {
+        return container;
+    }
+
+    long double &data(int row, int col) { return container[row][col]; }
+
     std::vector<std::vector<long double>> container;
     size_t numRows;
     size_t numColumns;
