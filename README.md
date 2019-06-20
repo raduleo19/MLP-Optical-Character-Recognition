@@ -1,10 +1,6 @@
 # Optical-Character-Recognition
 
 TODO:
-- Backpropagation
+- Solve Backpropagation System
+- Solve bugs caused by biasType (we need bias in backpropagation, whytf we have biasType -> maybe remove it)
 - Diagnostics
-- Hadamard multiplication
-
--~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-History:
-20.06.2019: Added TODO list
