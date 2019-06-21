@@ -2,6 +2,8 @@
 // Copyright 2019 Rica Radu Leonard
 
 #pragma once
+#include <cassert>
+#include <vector>
 
 template <class T>
 class Matrix {
@@ -10,8 +12,14 @@ class Matrix {
 
     Matrix(unsigned numRows, unsigned numColumns)
         : numRows(numRows), numColumns(numColumns) {
-        container = std::vector<std::vector<T>>(
-            numRows, std::vector<T>(numColumns));
+        container =
+            std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns));
+    }
+
+    Matrix(unsigned numRows, unsigned numColumns, T value)
+        : numRows(numRows), numColumns(numColumns) {
+        container =
+            std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns, value));
     }
 
     Matrix(const std::vector<std::vector<T>> &container) {
@@ -37,6 +45,7 @@ class Matrix {
     }
 
     Matrix operator+(const Matrix &other) const {
+        assert(numRows == other.numRows && numColumns == other.numColumns);
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -53,6 +62,7 @@ class Matrix {
     }
 
     Matrix operator-(const Matrix &other) const {
+        assert(numRows == other.numRows && numColumns == other.numColumns);
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -69,7 +79,8 @@ class Matrix {
     }
 
     Matrix operator*(const Matrix &other) const {
-        Matrix newMatrix(numRows, numColumns);
+        assert(numColumns == other.numRows);
+        Matrix newMatrix(numRows, other.numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < other.numColumns; j++) {
                 T sum = 0;
@@ -98,6 +109,7 @@ class Matrix {
     }
 
     Matrix HadamardMultiply(const Matrix &other) const {
+        assert(numRows == other.numRows && numColumns == other.numColumns);
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -138,9 +150,7 @@ class Matrix {
     }
 
     // Export Operations
-    auto GetContainer() const {
-        return container;
-    }
+    auto GetContainer() const { return container; }
 
     // Elements access
     T &data(int row, int col) { return container[row][col]; }
