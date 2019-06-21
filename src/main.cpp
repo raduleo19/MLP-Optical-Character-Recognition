@@ -7,10 +7,10 @@
 #include "../include/Utils.h"
 
 int main() {
-    NeuralNetwork<int, ActivationFunction,
+    NeuralNetwork<ActivationFunction,
                   Backpropagate<DerivativeActivationFunction>>
         myNeuralNetwork =
-            NeuralNetwork<int, ActivationFunction,
+            NeuralNetwork<ActivationFunction,
                           Backpropagate<DerivativeActivationFunction>>(
                 28 * 28, 2, std::vector<int>{28, 28}, 10, 0.1);
 

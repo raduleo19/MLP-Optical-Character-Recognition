@@ -8,7 +8,7 @@
 #include "../include/Matrix.h"
 #include "../include/Utils.h"
 
-template <class T, class Sigmoid, class Backpropagator>
+template <class ActivationFunction, class Backpropagator>
 class NeuralNetwork {
 #ifdef NNDIAG
     friend class NeuralDiagnostics;
@@ -82,7 +82,7 @@ class NeuralNetwork {
 
    protected:
     class Layer {
-        friend class NeuralNetwork<T, Sigmoid, Backpropagator>;
+        friend class NeuralNetwork<ActivationFunction, Backpropagator>;
 
        protected:
         Matrix<long double> activations, bias, weights;
@@ -114,10 +114,10 @@ class NeuralNetwork {
             container.push_back({it});
         }
         neuralLayers.front().activations =
-            Matrix<long double>(container).ApplyFunction<Sigmoid>();
+            Matrix<long double>(container).ApplyFunction<ActivationFunction>();
 
         auto sigma = [=](Matrix<long double> target) {
-            return target.ApplyFunction<Sigmoid>();
+            return target.ApplyFunction<ActivationFunction>();
         };
         int layersCount = neuralLayers.size();
         for (size_t i = 1; i < layersCount; ++i) {
