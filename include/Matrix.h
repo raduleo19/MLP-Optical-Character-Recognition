@@ -2,19 +2,19 @@
 // Copyright 2019 Rica Radu Leonard
 
 #pragma once
-#include <ctype.h>
 
+template <class T>
 class Matrix {
    public:
     Matrix() {}
 
     Matrix(unsigned numRows, unsigned numColumns)
         : numRows(numRows), numColumns(numColumns) {
-        container = std::vector<std::vector<long double>>(
-            numRows, std::vector<long double>(numColumns));
+        container = std::vector<std::vector<T>>(
+            numRows, std::vector<T>(numColumns));
     }
 
-    Matrix(const std::vector<std::vector<long double>> &container) {
+    Matrix(const std::vector<std::vector<T>> &container) {
         numRows = container.size();
         numColumns = container[0].size();
         this->container = container;
@@ -72,7 +72,7 @@ class Matrix {
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < other.numColumns; j++) {
-                long double sum = 0;
+                T sum = 0;
                 for (size_t k = 0; k < numColumns; ++k) {
                     sum += container[i][k] * other.container[k][j];
                 }
@@ -121,7 +121,7 @@ class Matrix {
     }
 
     // Scalar Operations
-    Matrix operator*(const long double &other) const {
+    Matrix operator*(const T &other) const {
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -131,7 +131,7 @@ class Matrix {
         return newMatrix;
     }
 
-    Matrix &operator*=(const long double &other) {
+    Matrix &operator*=(const T &other) {
         *this = (*this) * other;
         return *this;
     }
@@ -140,9 +140,9 @@ class Matrix {
         return container;
     }
 
-    long double &data(int row, int col) { return container[row][col]; }
+    T &data(int row, int col) { return container[row][col]; }
 
-    std::vector<std::vector<long double>> container;
+    std::vector<std::vector<T>> container;
     size_t numRows;
     size_t numColumns;
 };
