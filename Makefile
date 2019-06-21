@@ -16,5 +16,5 @@ debug:
 clean:
 	rm -rvf $(TARGET); clear
 
-run:build
+run: build
 	$(TARGET)

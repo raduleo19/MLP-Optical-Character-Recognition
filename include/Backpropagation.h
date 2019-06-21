@@ -9,14 +9,14 @@
 template <class Derivative>
 class Backpropagate {
    public:
-    void backpropagate(std::vector<Matrix> &weights,
-                       std::vector<Matrix> &biases,
-                       std::vector<Matrix> &activations,
+    void backpropagate(std::vector<Matrix<long double>> &weights,
+                       std::vector<Matrix<long double>> &biases,
+                       std::vector<Matrix<long double>> &activations,
                        const size_t &layersCount,
-                       const Matrix &desiredOutput,
+                       const Matrix<long double> &desiredOutput,
                        const long double &learningRate) {
-        std::vector<Matrix> dCdW(layersCount - 1);
-        std::vector<Matrix> dCdB(layersCount - 1);
+        std::vector<Matrix<long double>> dCdW(layersCount - 1);
+        std::vector<Matrix<long double>> dCdB(layersCount - 1);
 
         dCdB[layersCount - 2] =
             (activations[layersCount - 1] - desiredOutput)

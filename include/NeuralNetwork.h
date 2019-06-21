@@ -45,10 +45,10 @@ class NeuralNetwork {
     };
 
     void Train(const std::vector<long double> &input, int correctValue) {
-        Matrix desiredOutput(outputNeuronCount, 1);
-        std::vector<Matrix> weights;
-        std::vector<Matrix> biases;
-        std::vector<Matrix> activations;
+        Matrix<long double> desiredOutput(outputNeuronCount, 1);
+        std::vector<Matrix<long double>> weights;
+        std::vector<Matrix<long double>> biases;
+        std::vector<Matrix<long double>> activations;
 
         forwardPropagate(input);
 
@@ -88,16 +88,16 @@ class NeuralNetwork {
         friend class NeuralNetwork<T, Sigmoid, Backpropagator>;
 
        protected:
-        Matrix activations, bias, weights;
+        Matrix<long double> activations, bias, weights;
 
         Layer() {}
 
-        Layer(const size_t &size) { activations = Matrix(size, 1); }
+        Layer(const size_t &size) { activations = Matrix<long double>(size, 1); }
 
         Layer(const size_t &previousLayerSize, const size_t &size) {
-            activations = Matrix(size, 1);
-            bias = Matrix(size, 1);
-            weights = Matrix(size, previousLayerSize);
+            activations = Matrix<long double>(size, 1);
+            bias = Matrix<long double>(size, 1);
+            weights = Matrix<long double>(size, previousLayerSize);
         }
 
         Layer &operator=(const Layer &target) {
@@ -110,7 +110,7 @@ class NeuralNetwork {
     };
 
     void forwardPropagate(const std::vector<long double> &input) {
-        auto sigma = [=](Matrix target) {
+        auto sigma = [=](Matrix<long double> target) {
             return target.ApplyFunction<Sigmoid>();
         };
 
@@ -129,14 +129,14 @@ class NeuralNetwork {
     void setRandomStartingPoint() {
         randomEngine randomizer;
 
-        auto randomizeMatrix = [&randomizer](Matrix &target) {
+        auto randomizeMatrix = [&randomizer](Matrix<long double> &target) {
             auto container = target.GetContainer();
             for (auto &row : container) {
                 for (auto &column : row) {
                     column = randomizer.getNumber();
                 }
             }
-            return Matrix(container);
+            return Matrix<long double>(container);
         };
 
         for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
