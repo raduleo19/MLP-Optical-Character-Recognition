@@ -108,6 +108,7 @@ class Matrix {
         return newMatrix;
     }
 
+    // Function Operations
     template <class Func>
     Matrix ApplyFunction() const {
         Func function;
@@ -136,10 +137,12 @@ class Matrix {
         return *this;
     }
 
+    // Export Operations
     auto GetContainer() const {
         return container;
     }
 
+    // Elements access
     T &data(int row, int col) { return container[row][col]; }
 
     std::vector<std::vector<T>> container;
