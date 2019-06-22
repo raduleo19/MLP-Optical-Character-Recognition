@@ -24,15 +24,13 @@ class Backpropagate {
                                    activations[layersCount - 2] +
                                    biases[layersCount - 1])
                  .ApplyFunction<Derivative>();
-exit(1);
-         for (int i = layersCount - 3; i >= 0; i--) {
-             auto temp = activations[i] * weights[i] +
-                         biases[i].ApplyFunction<Derivative>();
-             dCdB[i] = (dCdB[i + 1] * weights[i + 1].Transpose())
-                           .HadamardMultiply(temp);
+
+         for (int i = layersCount - 3; i >  0; i--) {
+             auto temp = weights[i] * activations[i - 1] + biases[i].ApplyFunction<Derivative>();
+             dCdB[i] = (weights[i + 2].Transpose() * dCdB[i + 1]).HadamardMultiply(temp);
          }
 
-         for (unsigned i = 0; i < layersCount - 1; i++) {
+         for (unsigned i = 1; i < layersCount - 1; i++) {
              dCdW[i] = activations[i].Transpose() * dCdB[i];
              weights[i] = weights[i] - (dCdW[i] * learningRate);
              biases[i] = biases[i] - (dCdB[i] * learningRate);
