@@ -18,24 +18,24 @@ class Backpropagate {
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
         std::vector<Matrix<long double>> dCdB(layersCount - 1);
 
-        // dCdB[layersCount - 2] =
-        //     (activations[layersCount - 1] - desiredOutput)
-        //         .HadamardMultiply(activations[layersCount - 2] *
-        //                               weights[layersCount - 2] +
-        //                           biases[layersCount - 2])
-        //         .ApplyFunction<Derivative>();
+         dCdB[layersCount - 2] =
+             (activations[layersCount - 1] - desiredOutput)
+                 .HadamardMultiply(weights[layersCount - 1] *
+                                   activations[layersCount - 2] +
+                                   biases[layersCount - 1])
+                 .ApplyFunction<Derivative>();
+exit(1);
+         for (int i = layersCount - 3; i >= 0; i--) {
+             auto temp = activations[i] * weights[i] +
+                         biases[i].ApplyFunction<Derivative>();
+             dCdB[i] = (dCdB[i + 1] * weights[i + 1].Transpose())
+                           .HadamardMultiply(temp);
+         }
 
-        // for (int i = layersCount - 3; i >= 0; i--) {
-        //     auto temp = activations[i] * weights[i] +
-        //                 biases[i].ApplyFunction<Derivative>();
-        //     dCdB[i] = (dCdB[i + 1] * weights[i + 1].Transpose())
-        //                   .HadamardMultiply(temp);
-        // }
-
-        // for (unsigned i = 0; i < layersCount - 1; i++) {
-        //     dCdW[i] = activations[i].Transpose() * dCdB[i];
-        //     weights[i] = weights[i] - (dCdW[i] * learningRate);
-        //     biases[i] = biases[i] - (dCdB[i] * learningRate);
-        // }
+         for (unsigned i = 0; i < layersCount - 1; i++) {
+             dCdW[i] = activations[i].Transpose() * dCdB[i];
+             weights[i] = weights[i] - (dCdW[i] * learningRate);
+             biases[i] = biases[i] - (dCdB[i] * learningRate);
+         }
     };
 };
