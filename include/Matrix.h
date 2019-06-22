@@ -127,7 +127,7 @@ class Matrix {
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
-                newMatrix.container[i][j] = function(this->container[j][i]);
+                newMatrix.container[i][j] = function(this->container[i][j]);
             }
         }
         return newMatrix;

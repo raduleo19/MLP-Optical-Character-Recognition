@@ -119,12 +119,9 @@ class NeuralNetwork {
         auto sigma = [=](Matrix<long double> target) {
             return target.ApplyFunction<ActivationFunction>();
         };
-        int layersCount = neuralLayers.size();
-        for (size_t i = 1; i < layersCount; ++i) {
-            neuralLayers[i].activations =
-                sigma(neuralLayers[i].weights * neuralLayers[i - 1].activations +
-                 neuralLayers[i].bias);
-        }
+
+        for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
+            it -> activations = sigma(it -> weights * (it - 1) -> activations + it -> bias);
     }
 
     void setRandomStartingPoint() {
