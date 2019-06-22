@@ -128,17 +128,16 @@ class NeuralNetwork {
         randomEngine randomizer;
 
         auto randomizeMatrix = [&randomizer](Matrix<long double> &target) {
-            auto container = target.GetContainer();
-            for (auto &row : container) {
+            for (auto &row : target.container) {
                 for (auto &column : row) {
-                    column = randomizer.getNumber();
+                    column = (long double)randomizer.getNumber();
                 }
             }
-            return Matrix<long double>(container);
         };
-
+        
         for (auto it = neuralLayers.begin() + 1; it != neuralLayers.end(); ++it)
             randomizeMatrix(it->weights), randomizeMatrix(it->bias);
+
     }
 
     int inputNeuronCount, outputNeuronCount;

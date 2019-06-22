@@ -17,32 +17,34 @@ class Backpropagate {
                        const long double &learningRate) {
         std::vector<Matrix<long double>> dCdW(layersCount);
         std::vector<Matrix<long double>> dCdB(layersCount);
-/*
-         for (auto i : weights[2].container) {
+        static std::ofstream t ("/home/administrator/projects/OpticalCharacterRecognition/MLP-Optical-Character-Recognition/logs.txt");
+        
+        t << "\nNew gen\n\n";
+        for (auto i : weights[3].container) {
             for (auto j : i)
-                std::cout << j << " ";
-            std::cout << std::endl;
-         }
-*/
-         dCdB[layersCount - 1] =
-             (activations[layersCount - 1] - desiredOutput).HadamardMultiply(weights[layersCount - 1] * activations[layersCount - 2] + biases[layersCount - 1]).ApplyFunction<Derivative>();
+                t << j << " ";
+            t << std::endl;
+        }
 
-         for (int i = layersCount - 2; i > 0; --i) {
-             auto temp = (weights[i] * activations[i - 1] + biases[i]).ApplyFunction<Derivative>();
-             dCdB[i] = (weights[i + 1].Transpose() * dCdB[i + 1]).HadamardMultiply(temp);
-         }
+        dCdB[layersCount - 1] =
+            (activations[layersCount - 1] - desiredOutput).HadamardMultiply(weights[layersCount - 1] * activations[layersCount - 2] + biases[layersCount - 1]).ApplyFunction<Derivative>();
 
-         for (unsigned i = 1; i < layersCount; ++i) {
-             dCdW[i] = dCdB[i] * activations[i - 1].Transpose();
-             weights[i] = weights[i] - (dCdW[i] * learningRate);
-             biases[i] = biases[i] - (dCdB[i] * learningRate);
-         }
-/*
-         for (auto i : weights[2].container) {
+        for (int i = layersCount - 2; i > 0; --i) {
+            auto temp = (weights[i] * activations[i - 1] + biases[i]).ApplyFunction<Derivative>();
+            dCdB[i] = (weights[i + 1].Transpose() * dCdB[i + 1]).HadamardMultiply(temp);
+        }
+
+        for (unsigned i = 1; i < layersCount; ++i) {
+            dCdW[i] = dCdB[i] * activations[i - 1].Transpose();
+            weights[i] = weights[i] - (dCdW[i] * learningRate);
+            biases[i] = biases[i] - (dCdB[i] * learningRate);
+        }
+
+        for (auto i : weights[3].container) {
             for (auto j : i)
-                std::cout << j << " ";
-            std::cout << std::endl;
-         }
-*/
+                t << j << " ";
+            t << std::endl;
+        }
+
     };
 };
