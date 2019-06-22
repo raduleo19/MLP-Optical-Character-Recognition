@@ -99,10 +99,10 @@ class Matrix {
     }
 
     Matrix Transpose() const {
-        Matrix newMatrix(numRows, numColumns);
+        Matrix newMatrix(numColumns, numRows);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
-                newMatrix.container[i][j] = this->container[j][i];
+                newMatrix.container[j][i] = this->container[i][j];
             }
         }
         return newMatrix;
