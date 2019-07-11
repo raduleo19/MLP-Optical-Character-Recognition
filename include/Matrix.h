@@ -4,6 +4,7 @@
 #pragma once
 #include <cassert>
 #include <vector>
+#include "../include/Utils.h"
 
 template <class T>
 class Matrix {
@@ -14,12 +15,18 @@ class Matrix {
         : numRows(numRows), numColumns(numColumns) {
         container =
             std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns));
+        RandomEngine randomizer;
+        for (auto &row : container) {
+            for (auto &column : row) {
+                column = (T)randomizer.getNumber();
+            }
+        }
     }
 
     Matrix(unsigned numRows, unsigned numColumns, T value)
         : numRows(numRows), numColumns(numColumns) {
-        container =
-            std::vector<std::vector<T>>(numRows, std::vector<T>(numColumns, value));
+        container = std::vector<std::vector<T>>(
+            numRows, std::vector<T>(numColumns, value));
     }
 
     Matrix(const std::vector<std::vector<T>> &container) {

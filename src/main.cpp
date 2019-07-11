@@ -12,7 +12,7 @@ int main() {
         myNeuralNetwork =
             NeuralNetwork<ActivationFunction,
                           Backpropagate<DerivativeActivationFunction>>(
-                28 * 28, 2, std::vector<int>{28, 28}, 10, 0.1);
+                std::vector<int>{28, 28}, 0.1);
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
 

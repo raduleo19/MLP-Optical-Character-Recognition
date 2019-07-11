@@ -14,9 +14,9 @@
 std::vector<long double> GetRow(std::ifstream &inputFile);
 std::vector<std::pair<int, std::vector<long double>>> GetDataset(std::string inputFilename);
 
-class randomEngine {
+class RandomEngine {
 public:
-    randomEngine() {
+    RandomEngine() {
         seed = std::chrono::system_clock::now().time_since_epoch().count();
         generator = std::ranlux24(seed);
     }
