@@ -12,7 +12,7 @@ int main() {
         myNeuralNetwork =
             NeuralNetwork<ActivationFunction,
                           Backpropagate<DerivativeActivationFunction>>(
-                std::vector<int>{28, 28}, 0.1);
+                std::vector<int>{28 * 28, 128, 10}, 0.1);
 
     auto trainDataset = GetDataset("./train/mnist_train.csv");
 
@@ -38,9 +38,9 @@ int main() {
         std::cout << "Testing image:" << id << ' ';
         if (input.first == myNeuralNetwork.Classify(input.second)) {
             ++predicted;
-            std::cout << "Predicted"; 
+            std::cout << "Predicted";
         } else {
-            std::cout << "Not Predicted"; 
+            std::cout << "Not Predicted";
         }
         std::cout << '\n';
         id++;
