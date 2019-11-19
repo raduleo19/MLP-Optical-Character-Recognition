@@ -1,6 +1,4 @@
 # Optical-Character-Recognition
 
 TODO:
-- Backpropagate
-- Separe classes
-- Interface Tweaks
+- Complete overhaul for backprop
