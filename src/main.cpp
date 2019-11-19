@@ -6,19 +6,18 @@
 #include "../include/NeuralNetwork.h"
 #include "../include/Utils.h"
 
-int main() {
-    NeuralNetwork<ActivationFunction,
-                  Backpropagate<DerivativeActivationFunction>>
-        myNeuralNetwork =
-            NeuralNetwork<ActivationFunction,
-                          Backpropagate<DerivativeActivationFunction>>(
-                std::vector<int>{28 * 28, 128, 10}, 0.1);
+using NN = NeuralNetwork<ActivationFunction, Backpropagate<DerivativeActivationFunction>>;
 
-    auto trainDataset = GetDataset("./train/mnist_train.csv");
+int main() {
+    NN myNeuralNetwork = NN(std::vector<int>{28 * 28, 128, 10}, 0.1);
+
+    auto trainDataset = GetDataset("./dataset/train/mnist_train.csv");
 
     std::cout << "Training...\n";
     for (int i = 1; i <= 50; ++i) {
+#ifdef VERBOSE
         std::cout << "Epoch: " << i << '\n';
+#endif
         int set = 1;
         for (auto input : trainDataset) {
             // std::cout << "Set: " << set << ' ';
@@ -29,21 +28,27 @@ int main() {
         // std::cout << "\n";
     }
 
-    auto testDataset = GetDataset("./test/mnist_test.csv");
+    auto testDataset = GetDataset("./dataset/test/mnist_test.csv");
     int total = testDataset.size();
     int predicted = 0;
 
     int id = 1;
     for (auto input : testDataset) {
+#ifdef VERBOSE
         std::cout << "Testing image:" << id << ' ';
+#endif
         if (input.first == myNeuralNetwork.Classify(input.second)) {
             ++predicted;
-            std::cout << "Predicted";
+#ifdef VERBOSE
+            std::cout << "Predicted\n";
+#endif
         } else {
-            std::cout << "Not Predicted";
+#ifdef VERBOSE
+            std::cout << "Not Predicted\n";
+#endif
         }
-        std::cout << '\n';
-        id++;
+        
+        ++id;
     }
 
     std::cout << "Accuracy:" << 100.0 * predicted / total << '\n';

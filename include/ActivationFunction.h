@@ -2,27 +2,19 @@
 
 #pragma once
 
+#include <cmath>
+
 // SoftSign
 class ActivationFunction {
    public:
     long double operator()(const long double &target) {
-        return ((target / (1 + abs(target))) + 1) / 2;
-    }
-
-   private:
-    long double abs(const long double &target) {
-        return target < 0.0 ? -target : target;
+        return (1 / (1 + exp(-target)));
     }
 };
 
 class DerivativeActivationFunction {
    public:
     long double operator()(const long double &target) {
-        return 1 / (2 * (1 + abs(target)) * (1 + abs(target)));
-    }
-
-   private:
-    long double abs(const long double &target) {
-        return target < 0.0 ? -target : target;
+        return exp(-target) / ((1 + exp(-target) * (1 + exp(-target))));
     }
 };

@@ -16,6 +16,5 @@ class Backpropagate {
                        const Matrix<long double> &desiredOutput,
                        const long double &learningRate) {
     
-
     };
 };

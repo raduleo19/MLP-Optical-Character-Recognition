@@ -1,6 +1,6 @@
 GXX = g++
-GFLAGS = -std=c++14 -O3
-TARGET = ./bin/ocr
+GFLAGS = -std=c++17
+TARGET = bin/ocr
 HEADERS = Utils.cpp
 H_DIR = ./include/
 DIR = ./src/
