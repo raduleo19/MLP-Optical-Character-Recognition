@@ -105,7 +105,7 @@ class Matrix {
         return *this;
     }
 
-    Matrix Transpose() const {
+    Matrix transpose() const {
         Matrix newMatrix(numColumns, numRows);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -115,7 +115,7 @@ class Matrix {
         return newMatrix;
     }
 
-    Matrix HadamardMultiply(const Matrix &other) const {
+    Matrix hadamardMultiply(const Matrix &other) const {
         assert(numRows == other.numRows && numColumns == other.numColumns);
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
@@ -129,7 +129,7 @@ class Matrix {
 
     // Function Operations
     template <class Func>
-    Matrix ApplyFunction() const {
+    Matrix applyFunction() const {
         Func function;
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {

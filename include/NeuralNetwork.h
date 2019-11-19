@@ -28,10 +28,30 @@ class NeuralNetwork {
         }
     };
 
-    void Train(const std::vector<long double> &input, int correctValue) {};
+    void Train(const std::vector<long double> &input, int correctValue) {
+        /* OLD VERSION
+        Matrix<long double> desiredOutput(outputNeuronCount, 1, 0.0);
 
-    int Classify(const std::vector<long double> &input) {
-        ForwardPropagate(input);
+        forwardPropagate(input);
+        desiredOutput.data(correctValue, 0) = 1.0;
+
+        for (auto it : neuralLayers)
+            weights.push_back(it.weights), biases.push_back(it.bias),
+            activations.push_back(it.activations);
+
+        auto backpropagator = Backpropagator();
+        backpropagator.backpropagate(weights, biases, activations,
+            neuralNetworkSize, desiredOutput,
+            learningRate);
+
+        for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
+            it->weights = weights[it - neuralLayers.begin()],
+            it->bias = biases[it - neuralLayers.begin()];
+        */
+    };
+
+    int classify(const std::vector<long double> &input) {
+        forwardPropagate(input);
         long double best = 0;
 
         auto results = activations[layersCount - 1].container.front();
@@ -44,13 +64,13 @@ class NeuralNetwork {
         return best;
     };
 
-    void ForwardPropagate(const std::vector<long double> &input) {
+    void forwardPropagate(const std::vector<long double> &input) {
         activations[0] = matrix({input});
 
         for (int i = 1; i < layersCount; ++i) {
             activations[i] =
                 (activations[i - 1] * weights[i - 1] + biases[i - 1]);
-            activations[i] = activations[i].ApplyFunction<ActivationFunction>();
+            activations[i] = activations[i].applyFunction<ActivationFunction>();
         }
     }
 

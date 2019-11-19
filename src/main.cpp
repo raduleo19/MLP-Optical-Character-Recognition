@@ -22,7 +22,7 @@ int main() {
         for (auto input : trainDataset) {
             // std::cout << "Set: " << set << ' ';
             set++;
-            myNeuralNetwork.Train(input.second, input.first);
+            myNeuralNetwork.train(input.second, input.first);
             if (set == 70) break;
         }
         // std::cout << "\n";
@@ -37,7 +37,7 @@ int main() {
 #ifdef VERBOSE
         std::cout << "Testing image:" << id << ' ';
 #endif
-        if (input.first == myNeuralNetwork.Classify(input.second)) {
+        if (input.first == myNeuralNetwork.classify(input.second)) {
             ++predicted;
 #ifdef VERBOSE
             std::cout << "Predicted\n";
