@@ -16,7 +16,6 @@ class DerivativeActivationFunction {
     ActivationFunction auxiliary = ActivationFunction();
  public:
     long double operator()(const long double &target) {
-        // return exp(-target) / ((1 + exp(-target) * (1 + exp(-target))));
         return auxiliary(target) * (1 - auxiliary(target));
     }
 };

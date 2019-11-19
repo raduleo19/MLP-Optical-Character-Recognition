@@ -17,8 +17,8 @@ using std::endl;
 template <class ActivationFunction, class Optimizer>
 class NeuralNetwork {
 public:
-    NeuralNetwork(const std::vector<int>& sizes, long double learningRate)
-        : learningRate(learningRate) {
+    NeuralNetwork(const std::vector<int>& sizes, long double learningRate) :
+        learningRate(learningRate) {
         layersCount = sizes.size();
         activations = layers(layersCount);
         weights = layers(layersCount - 1);
@@ -50,7 +50,7 @@ public:
         long double best = 0;
 
         auto results = activations[layersCount - 1].container.front();
-        for (int i = 1; i < results.size(); ++i) {
+        for (int i = 0; i < results.size(); ++i) {
             if (results[i] > results[best]) {
                 best = i;
             }
@@ -63,14 +63,11 @@ public:
         activations[0] = matrix({ input });
 
         for (int i = 1; i < layersCount; ++i) {
-            activations[i] = activations[i - 1] * weights[i - 1] + biases[i - 1];
-            activations[i] = activations[i].applyFunction<ActivationFunction>();  // e complet contraproductiv, putea fi in linia de mai sus aplicat pe rvalue
+            activations[i] = (activations[i - 1] * weights[i - 1] + biases[i - 1]).applyFunction<ActivationFunction>();
         }
     }
 
     long double learningRate;
-    layers weights;
-    layers biases;
-    layers activations;
+    layers weights, biases, activations;
     size_t layersCount;
 };

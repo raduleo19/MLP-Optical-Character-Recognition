@@ -1,27 +1,26 @@
 // Copyright 2019 Rica Radu Leonard
 // Copyright 2019 Ciobanu Bogdan-Calin
+
 #pragma once
 
 #include <vector>
 #include "../include/Matrix.h"
+
 using std::cout;
 using std::endl;
+
 // Gradient Descent Backpropagate
 template <class Derivative>
 class Backpropagate {
- private:
-     int epoch = 0;
  public:
     void takeStep(std::vector<Matrix<long double>> &weights,
                        std::vector<Matrix<long double>> &biases,
                        std::vector<Matrix<long double>> &activations,
                        const size_t &layersCount,
                        Matrix<long double> &desiredOutput,
-                       const long double &learningRate) {
+                       const long double &learningRate) { // REWORK
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
         std::vector<Matrix<long double>> dCdB(layersCount - 1);
-
-        cout << "Epoch: " << epoch++ << endl;
 
         dCdB[layersCount - 2] = (activations[layersCount - 1] - desiredOutput).hadamardMultiply(activations[layersCount - 2] * weights[layersCount - 2]  + biases[layersCount - 2]).applyFunction<Derivative>();
 
