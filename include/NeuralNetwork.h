@@ -9,23 +9,26 @@
 #include "../include/Matrix.h"
 #include "../include/Utils.h"
 
+using matrix = Matrix<long double>;
+using layers = std::vector<matrix>;
+
 template <class ActivationFunction, class Backpropagator>
 class NeuralNetwork {
    public:
     NeuralNetwork(const std::vector<int> &sizes, long double learningRate)
         : learningRate(learningRate) {
         layersCount = sizes.size();
-        activations = std::vector<Matrix<long double>>(layersCount);
-        weights = std::vector<Matrix<long double>>(layersCount - 1);
-        biases = std::vector<Matrix<long double>>(layersCount - 1);
+        activations = layers(layersCount);
+        weights = layers(layersCount - 1);
+        biases = layers(layersCount - 1);
 
         for (int i = 0; i < layersCount - 1; i++) {
-            weights[i] = Matrix<long double>(sizes[i], sizes[i + 1]);
-            biases[i] = Matrix<long double>(1, sizes[i + 1]);
+            weights[i] = matrix(sizes[i], sizes[i + 1]);
+            biases[i] = matrix(1, sizes[i + 1]);
         }
     };
 
-    void Train(const std::vector<long double> &input, int correctValue){};
+    void Train(const std::vector<long double> &input, int correctValue) {};
 
     int Classify(const std::vector<long double> &input) {
         ForwardPropagate(input);
@@ -42,7 +45,7 @@ class NeuralNetwork {
     };
 
     void ForwardPropagate(const std::vector<long double> &input) {
-        activations[0] = Matrix<long double>({input});
+        activations[0] = matrix({input});
 
         for (int i = 1; i < layersCount; ++i) {
             activations[i] =
@@ -52,8 +55,8 @@ class NeuralNetwork {
     }
 
     long double learningRate;
-    std::vector<Matrix<long double>> weights;
-    std::vector<Matrix<long double>> biases;
-    std::vector<Matrix<long double>> activations;
+    layers weights;
+    layers biases;
+    layers activations;
     size_t layersCount;
 };
