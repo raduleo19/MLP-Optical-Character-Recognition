@@ -18,14 +18,17 @@ std::vector<long double> GetRow(std::ifstream &inputFile) {
 std::vector<std::pair<int, std::vector<long double>>> GetDataset(std::string inputFilename) {
     std::vector<std::pair<int, std::vector<long double>>> trainDataset;
     std::ifstream trainingFile(inputFilename);
+    int correctValue;
+
+    std::cout << "Reading data" << std::endl;
 
     while (true) {
         auto row = GetRow(trainingFile);
         if (row.empty()) {
             break;
         }
-        int correctValue = row[0];
-        trainDataset.push_back({correctValue, std::vector<long double>(row.begin() + 1, row.end())});
+        correctValue = row[0];
+        trainDataset.push_back({correctValue, std::vector<long double>(1 + row.begin(), row.end())});
     }
     return trainDataset;
 }

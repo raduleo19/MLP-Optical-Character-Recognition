@@ -13,7 +13,7 @@ int main() {
 
     auto trainDataset = GetDataset("./dataset/train/mnist_train.csv");
 
-    std::cout << "Training...\n";
+    std::cout << "Training..." << std::endl;
     for (int i = 1; i <= 50; ++i) {
 #ifdef VERBOSE
         std::cout << "Epoch: " << i << '\n';
@@ -31,6 +31,7 @@ int main() {
     auto testDataset = GetDataset("./dataset/test/mnist_test.csv");
     int total = testDataset.size();
     int predicted = 0;
+    std::cout << "Testing..." << std::endl;
 
     int id = 1;
     for (auto input : testDataset) {

@@ -10,8 +10,10 @@
 
 using matrix = Matrix<long double>;
 using layers = std::vector<matrix>;
+using std::cout;
+using std::endl;
 
-template <class ActivationFunction, class Backpropagator>
+template <class ActivationFunction, class CorrectionFunction>
 class NeuralNetwork {
    public:
     NeuralNetwork(const std::vector<int> &sizes, long double learningRate)
@@ -22,17 +24,24 @@ class NeuralNetwork {
         biases = layers(layersCount - 1);
 
         for (int i = 0; i < layersCount - 1; ++i) {
+            activations[i] = matrix(1, sizes[i]);
             weights[i] = matrix(sizes[i], sizes[i + 1]);
             biases[i] = matrix(1, sizes[i + 1]);
         }
+
+        activations[layersCount - 1] = matrix(1, sizes[layersCount - 1]);
+
+        cout << "Initialization complete" << endl;
     };
 
     void train(const std::vector<long double> &input, const int correctValue) {
-        matrix desiredOutput(activations[layersCount - 1].size().first, 1, 0.0);
-        static auto backpropagator = Backpropagator();
+        matrix desiredOutput(1, 10, 0.0);
+        static auto coordinator = CorrectionFunction();
+        
         forwardPropagate(input);
+        desiredOutput.data(0, correctValue) = 1.0;
 
-        backpropagator.backpropagate(weights, biases, activations, layersCount, desiredOutput, learningRate);
+        coordinator.takeStep(weights, biases, activations, layersCount, desiredOutput, learningRate);
     };
 
     int classify(const std::vector<long double> &input) {
@@ -54,7 +63,7 @@ class NeuralNetwork {
 
         for (int i = 1; i < layersCount; ++i) {
             activations[i] = activations[i - 1] * weights[i - 1] + biases[i - 1];
-            activations[i] = activations[i].applyFunction<ActivationFunction>();
+            activations[i] = activations[i].applyFunction<ActivationFunction>();  // e complet contraproductiv, putea fi in linia de mai sus aplicat pe rvalue
         }
     }
 
