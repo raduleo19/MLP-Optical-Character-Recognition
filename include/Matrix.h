@@ -6,6 +6,8 @@
 #include <vector>
 #include "../include/Utils.h"
 
+//#define UNSAFE_MODE
+
 template <class T>
 class Matrix {
    public:
@@ -52,7 +54,9 @@ class Matrix {
     }
 
     Matrix operator+(const Matrix &other) const {
+#ifndef UNSAFE_MODE
         assert(numRows == other.numRows && numColumns == other.numColumns);
+#endif
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -69,7 +73,9 @@ class Matrix {
     }
 
     Matrix operator-(const Matrix &other) const {
+#ifndef UNSAFE_MODE
         assert(numRows == other.numRows && numColumns == other.numColumns);
+#endif
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -86,7 +92,9 @@ class Matrix {
     }
 
     Matrix operator*(const Matrix &other) const {
+#ifndef UNSAFE_MODE
         assert(numColumns == other.numRows);
+#endif
         Matrix newMatrix(numRows, other.numColumns);
         for (size_t i = 0; i < numRows; i++) {
             for (size_t j = 0; j < other.numColumns; j++) {
@@ -116,7 +124,9 @@ class Matrix {
     }
 
     Matrix hadamardMultiply(const Matrix &other) const {
+#ifndef UNSAFE_MODE
         assert(numRows == other.numRows && numColumns == other.numColumns);
+#endif
         Matrix newMatrix(numRows, numColumns);
         for (size_t i = 0; i < numRows; ++i) {
             for (size_t j = 0; j < numColumns; ++j) {
@@ -154,6 +164,10 @@ class Matrix {
     Matrix &operator*=(const T &other) {
         *this = (*this) * other;
         return *this;
+    }
+
+    std::pair<size_t, size_t> size() {
+        return {numRows, numColumns};
     }
 
     // Export Operations

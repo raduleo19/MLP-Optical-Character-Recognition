@@ -2,7 +2,6 @@
 // Copyright 2019 Rica Radu Leonard
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include "../include/ActivationFunction.h"
 #include "../include/Diagnostics.h"
@@ -22,32 +21,18 @@ class NeuralNetwork {
         weights = layers(layersCount - 1);
         biases = layers(layersCount - 1);
 
-        for (int i = 0; i < layersCount - 1; i++) {
+        for (int i = 0; i < layersCount - 1; ++i) {
             weights[i] = matrix(sizes[i], sizes[i + 1]);
             biases[i] = matrix(1, sizes[i + 1]);
         }
     };
 
-    void Train(const std::vector<long double> &input, int correctValue) {
-        /* OLD VERSION
-        Matrix<long double> desiredOutput(outputNeuronCount, 1, 0.0);
-
+    void train(const std::vector<long double> &input, const int correctValue) {
+        matrix desiredOutput(activations[layersCount - 1].size().first, 1, 0.0);
+        static auto backpropagator = Backpropagator();
         forwardPropagate(input);
-        desiredOutput.data(correctValue, 0) = 1.0;
 
-        for (auto it : neuralLayers)
-            weights.push_back(it.weights), biases.push_back(it.bias),
-            activations.push_back(it.activations);
-
-        auto backpropagator = Backpropagator();
-        backpropagator.backpropagate(weights, biases, activations,
-            neuralNetworkSize, desiredOutput,
-            learningRate);
-
-        for (auto it = neuralLayers.begin(); it != neuralLayers.end(); ++it)
-            it->weights = weights[it - neuralLayers.begin()],
-            it->bias = biases[it - neuralLayers.begin()];
-        */
+        backpropagator.backpropagate(weights, biases, activations, layersCount, desiredOutput, learningRate);
     };
 
     int classify(const std::vector<long double> &input) {
@@ -68,8 +53,7 @@ class NeuralNetwork {
         activations[0] = matrix({input});
 
         for (int i = 1; i < layersCount; ++i) {
-            activations[i] =
-                (activations[i - 1] * weights[i - 1] + biases[i - 1]);
+            activations[i] = activations[i - 1] * weights[i - 1] + biases[i - 1];
             activations[i] = activations[i].applyFunction<ActivationFunction>();
         }
     }

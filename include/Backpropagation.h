@@ -19,13 +19,13 @@ class Backpropagate {
         std::vector<Matrix<long double>> dCdB(layersCount);
         //static std::ofstream t("/home/administrator/projects/OpticalCharacterRecognition/MLP-Optical-Character-Recognition/logs.txt");
 
-        t << "\nNew gen\n\n";
+        /*t << "\nNew gen\n\n";
         for (auto i : weights[3].container) {
             for (auto j : i)
                 t << j << " ";
             t << std::endl;
         }
-
+        */
         dCdB[layersCount - 1] =
             (activations[layersCount - 1] - desiredOutput).hadamardMultiply(weights[layersCount - 1] * activations[layersCount - 2] + biases[layersCount - 1]).applyFunction<Derivative>();
 
@@ -39,11 +39,12 @@ class Backpropagate {
             weights[i] = weights[i] - (dCdW[i] * learningRate);
             biases[i] = biases[i] - (dCdB[i] * learningRate);
         }
-
+        /*
         for (auto i : weights[3].container) {
             for (auto j : i)
                 t << j << " ";
             t << std::endl;
         }
+        */
     };
 };
