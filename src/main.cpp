@@ -9,23 +9,18 @@
 using NN = NeuralNetwork<ActivationFunction, Backpropagate<DerivativeActivationFunction>>;
 
 int main() {
-    NN myNeuralNetwork = NN(std::vector<int>{28 * 28, 128, 10}, 0.1);
+    NN myNeuralNetwork = NN(std::vector<int>{28 * 28, 128, 10}, 0.001);
 
     auto trainDataset = GetDataset("./dataset/train/mnist_train.csv");
+    std::cout << trainDataset.size() << std::endl;
 
     std::cout << "Training..." << std::endl;
-    for (int i = 1; i <= 50; ++i) {
-#ifdef VERBOSE
-        std::cout << "Epoch: " << i << '\n';
-#endif
-        int set = 1;
-        for (auto input : trainDataset) {
-            // std::cout << "Set: " << set << ' ';
-            set++;
-            myNeuralNetwork.train(input.second, input.first);
-            if (set == 70) break;
-        }
-        // std::cout << "\n";
+
+    int set = 0;
+    for (auto input : trainDataset) {
+        myNeuralNetwork.train(input.second, input.first);
+        if (++set == 4000)
+            break;
     }
 
     auto testDataset = GetDataset("./dataset/test/mnist_test.csv");

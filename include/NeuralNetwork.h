@@ -14,7 +14,7 @@ using layers = std::vector<matrix>;
 using std::cout;
 using std::endl;
 
-template <class ActivationFunction, class CorrectionFunction>
+template <class ActivationFunction, class Optimizer>
 class NeuralNetwork {
 public:
     NeuralNetwork(const std::vector<int>& sizes, long double learningRate)
@@ -37,7 +37,7 @@ public:
 
     void train(const std::vector<long double>& input, const int correctValue) {
         matrix desiredOutput(activations[layersCount - 1].size().first, activations[layersCount - 1].size().second, 0.0);
-        static auto coordinator = CorrectionFunction();
+        static auto coordinator = Optimizer();
 
         forwardPropagate(input);
         desiredOutput.data(0, correctValue) = 1.0;
