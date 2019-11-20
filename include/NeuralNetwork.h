@@ -42,6 +42,17 @@ public:
         forwardPropagate(input);
         desiredOutput.data(0, correctValue) = 1.0;
 
+        auto costFunction = [&, this]() -> double {
+            double retval = 0;
+            auto temp = activations[layersCount - 1] - desiredOutput;
+            temp = temp.hadamardMultiply(temp);
+            for (int i = 0; i < 10; ++i)
+                retval += temp.container[0][i];
+            return retval;
+        };
+
+        cout << "Cost function = " << costFunction() << endl;
+
         coordinator.takeStep(weights, biases, activations, layersCount, desiredOutput, learningRate);
     };
 

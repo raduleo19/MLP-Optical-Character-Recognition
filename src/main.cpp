@@ -6,6 +6,8 @@
 #include "../include/NeuralNetwork.h"
 #include "../include/Utils.h"
 
+#define VERBOSE
+
 using NN = NeuralNetwork<ActivationFunction, Backpropagate<DerivativeActivationFunction>>;
 
 int main() {

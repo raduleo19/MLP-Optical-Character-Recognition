@@ -6,7 +6,7 @@
 #include <vector>
 #include "../include/Utils.h"
 
-//#define UNSAFE_MODE
+#define UNSAFE_MODE
 
 template <class T>
 class Matrix {
