@@ -46,12 +46,19 @@ public:
             double retval = 0;
             auto temp = activations[layersCount - 1] - desiredOutput;
             temp = temp.hadamardMultiply(temp);
-            for (int i = 0; i < 10; ++i)
+            cout << endl;
+            for (int i = 0; i < 10; ++i) {
                 retval += temp.container[0][i];
+                cout << activations[layersCount - 1].container[0][i] << " ";
+            }
+            cout << endl;
+            for (int i = 0; i < 10; ++i)
+                cout << desiredOutput.container[0][i] << " ";
+            cout << endl;
             return retval;
         };
 
-        cout << "Cost function = " << costFunction() << endl;
+        cout << "----------------------------------------------"<< costFunction() << endl;
 
         coordinator.takeStep(weights, biases, activations, layersCount, desiredOutput, learningRate);
     };
