@@ -22,7 +22,8 @@ class Backpropagate {
         std::vector<Matrix<long double>> dCdW(layersCount - 1);
         std::vector<Matrix<long double>> dCdB(layersCount - 1);
 
-        dCdB[layersCount - 2] = (activations[layersCount - 1] - desiredOutput).hadamardMultiply(activations[layersCount - 2] * weights[layersCount - 2]  + biases[layersCount - 2]).applyFunction<Derivative>();
+        dCdB[layersCount - 2] = (activations[layersCount - 1] - desiredOutput).hadamardMultiply
+                                (activations[layersCount - 2] * weights[layersCount - 2]  + biases[layersCount - 2]).applyFunction<Derivative>();
 
         for (int i = layersCount - 2; i > 0; --i) {
             auto temp = (activations[i - 1] * weights[i - 1] + biases[i - 1]).applyFunction<Derivative>();
