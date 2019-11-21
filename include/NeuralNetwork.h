@@ -40,7 +40,7 @@ public:
         static auto coordinator = Optimizer();
 
         forwardPropagate(input);
-        desiredOutput.data(0, correctValue) = 1.0;
+        desiredOutput.container[0][correctValue] = 1.0;
 
         auto costFunction = [&, this]() -> double {
             double retval = 0;
